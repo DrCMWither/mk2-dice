@@ -1,6 +1,8 @@
 import { getAttributes } from "../utils/storage.js";
 import { normalizeKey  } from "../utils/utils.js";
 import { rollDice      } from "../utils/dice.js";
+import { escapeHtml } from "../utils/utils.js";
+
 export async function handleRa(env, message, userId, chatId, userName) {
     const parts = message.trim().split(/\s+/);
     if (parts.length < 2) {
@@ -21,7 +23,7 @@ export async function handleRa(env, message, userId, chatId, userName) {
     const value = attrs[attrName] ?? tempValue;
 
     if (!value || isNaN(value)) {
-        return `未找到属性「${rawAttrName}」，也未提供临时值。`;
+        return `未找到属性「${escapeHtml(rawAttrName)}」，也未提供临时值。`;
     }
 
     // 1d100
@@ -47,5 +49,5 @@ export async function handleRa(env, message, userId, chatId, userName) {
         ? `${rawAttrName}（→${attrName}）`
         : rawAttrName;
 
-    return `🎲 ${userName} 进行「${displayName}」检定\n结果: ${roll}/${value} → ${result}`;
+    return `🎲 ${escapeHtml(userName)} 进行「${escapeHtml(displayName)}」检定\n结果: ${roll}/${value} → ${result}`;
 }

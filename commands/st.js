@@ -5,7 +5,8 @@ import {
     clearAllAttributes,
                    } from "../utils/storage.js";
 import {  splitAttributes,
-    normalizeKey
+    normalizeKey,
+    escapeHtml
                    } from "../utils/utils.js";
 
 export async function handleSt(env, message, userId, chatId, chatTitle) {
@@ -31,8 +32,8 @@ export async function handleSt(env, message, userId, chatId, chatTitle) {
         const key = await normalizeKey(env, attr);
         const ok = await deleteAttribute(env, userId, chatId, key);
         return ok
-            ? `已删除您在群 ${chatTitle} 的属性「${attr}」。`
-            : `没有找到属性「${attr}」。`;
+            ? `已删除您在群 ${escapeHtml(chatTitle)} 的属性「${escapeHtml(attr)}」。`
+            : `没有找到属性「${escapeHtml(attr)}」。`;
     }
 
     // /st
@@ -49,14 +50,14 @@ export async function handleSt(env, message, userId, chatId, chatTitle) {
             // Check value
             const num = Number(value);
             if (isNaN(num) || num < 0 || num > 99) {
-                reply += `- ${rawKey}${rawKey !== key ? `（→${key}）` : ""} 的值无效，必须是 0~99 的数字，忽略\n`;
+                reply += `- ${escapeHtml(rawKey)}${escapeHtml(rawKey) !== key ? `（→${key}）` : ""} 的值无效，必须是 0~99 的数字，忽略\n`;
                 continue;
             }
 
             await setAttribute(env, userId, chatId, key, num);
 
             // Construct display text
-            reply += `- ${rawKey}${rawKey !== key ? `（→${key}）` : ""} = ${num}\n`;
+            reply += `- ${escapeHtml(rawKey)}${escapeHtml(rawKey) !== key ? `（→${key}）` : ""} = ${num}\n`;
         }
         return reply.trim();
     }

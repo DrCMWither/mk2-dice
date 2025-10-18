@@ -1,4 +1,5 @@
 import { getAttributes, getAllAttributes } from "../utils/storage.js";
+import { escapeHtml } from "../utils/utils.js";
 
 export async function handleGetst(env, message, userId, chatId, chatTitle, userName) {
     // Parameters check
@@ -22,9 +23,9 @@ export async function handleGetst(env, message, userId, chatId, chatTitle, userN
                 return "您在所有群都没有设置任何属性。";
             }
 
-            let text = `${userName} 在所有群的属性：\n`;
+            let text = `${escapeHtml(userName)} 在所有群的属性：\n`;
             for (let [title, attrs] of Object.entries(allAttrs)) {
-                text += `\n群 ${title || "未知"}:\n`;
+                text += `\n群 ${escapeHtml(title || "未知")}:\n`;
                 if (attrs && typeof attrs === "object") {
                     for (let [k, v] of Object.entries(attrs)) {
                         text += `- ${k}: ${v}\n`;
@@ -37,12 +38,12 @@ export async function handleGetst(env, message, userId, chatId, chatTitle, userN
         // 默认：当前群
         const attrs = await getAttributes(env, userId, chatId);
         if (!attrs || Object.keys(attrs).length === 0) {
-            return `您在群 ${chatTitle || chatId} 没有设置任何属性。`;
+            return `您在群 ${escapeHtml(chatTitle) || chatId} 没有设置任何属性。`;
         }
 
-        let text = `${userName} 在当前群的属性：\n`;
+        let text = `${escapeHtml(userName)} 在当前群的属性：\n`;
         for (let [k, v] of Object.entries(attrs)) {
-            text += `- ${k}: ${v}\n`;
+            text += `- ${escapeHtml(k)}: ${escapeHtml(v)}\n`;
         }
         return text.trim();
     } catch (err) {

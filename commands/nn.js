@@ -4,7 +4,7 @@ import {
     clearAllAttributes,
 } from "../utils/storage.js";
 
-import { normalizeKey } from "../utils/utils.js";
+import { normalizeKey, escapeHtml } from "../utils/utils.js";
 
 export async function handleName(env, message, userId, chatId, chatTitle, userName) {
     const parts = message.trim().split(/\s+/);
@@ -18,7 +18,7 @@ export async function handleName(env, message, userId, chatId, chatTitle, userNa
     // /nn clear
     if (cmd === "clear") {
         await clearAttributes(env, userId, chatId, true);
-        return `已清除您在群 ${chatTitle} 的昵称。`;
+        return `已清除您在群 ${escapeHtml(chatTitle)} 的昵称。`;
     }
 
     // /nn clearall
@@ -32,5 +32,5 @@ export async function handleName(env, message, userId, chatId, chatTitle, userNa
 
     await setAttribute(env, userId, chatId, null, rawNickname, true);
 
-    return `已设置 ${userName} 在群 ${chatTitle} 的昵称「${rawNickname}${rawNickname !== key ? ` → ${key}` : ""}」`;
+    return `已设置 ${escapeHtml(userName)} 在群 ${escapeHtml(chatTitle)} 的昵称「${escapeHtml(rawNickname)}${escapeHtml(rawNickname) !== key ? ` → ${key}` : ""}」`;
 }

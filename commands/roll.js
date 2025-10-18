@@ -1,5 +1,6 @@
 import { rollDice } from "../utils/dice.js";
 import { getAttributes } from "../utils/storage.js";
+import { escapeHtml } from "../utils/utils.js";
 
 export async function handleRoll(env, message, userId, chatId, userName) {
     const parts = message.match(/^\/(roll|r|rh)(?:\s+(\d*)d(\d+)(?:\*(\d+))?([+-]\d+)?)?$/i);
@@ -32,5 +33,5 @@ export async function handleRoll(env, message, userId, chatId, userName) {
     if (multiplier !== 1) expanded = `(${expanded})*${multiplier}`;
     if (modifier !== 0) expanded += ` (${modifier > 0 ? "+" : ""}${modifier})`;
 
-    return `🎲 ${userName} 的投掷结果: ${diceNotation} = ${expanded}\n合计: ${total}`;
+    return `🎲 ${escapeHtml(userName)} 的投掷结果: ${diceNotation} = ${expanded}\n合计: ${total}`;
 }
