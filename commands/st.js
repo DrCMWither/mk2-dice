@@ -1,15 +1,42 @@
-import {
+/* import {
           setAttribute,
           deleteAttribute,
           clearAttributes,
           clearAllAttributes,
-                         } from "../utils/storage.js";
+                         } from "../utils/storage.js"; */
 import {  splitAttributes,
           normalizeKey,
           escapeHtml
                          } from "../utils/utils.js";
 
 
+/**
+ * Handles setting, deleting, and clearing user attributes in a group.
+ *
+ * Supported commands:
+ * - "/st clear": Clear all attributes of the user in the current group.
+ * - "/st clearall": Clear all attributes of the user in all groups.
+ * - "/st del <attribute>": Delete a specific attribute of the user in the current group.
+ * - "/st <attr1> <value1> <attr2> <value2> ...": Set one or multiple attributes (0-99) for the user in the current group.
+ *
+ * Attribute keys are normalized, and invalid values (non-numeric or out of 0-99) are ignored.
+ *
+ * @param {Object} env - The environment/context object, providing KV storage access.
+ * @param {string} message - The command message, e.g., "/st Strength 50 Luck 30".
+ * @param {string} userId - The unique identifier of the user performing the command.
+ * @param {string} chatId - The unique identifier of the chat/group.
+ * @param {string} chatTitle - The display title of the chat/group.
+ * @returns {Promise<string>} - A response message describing the result of the operation.
+ *
+ * @example
+ * await handleSt(env, "/st Strength 50 Luck 30", "123", "456", "Adventurers");
+ *
+ * @example
+ * await handleSt(env, "/st clear", "123", "456", "Adventurers");
+ *
+ * @example
+ * await handleSt(env, "/st del Strength", "123", "456", "Adventurers");
+ */
 export async function handleSt(env, message, userId, chatId, chatTitle) {
     message = splitAttributes(message);
     const parts = message.trim().split(/\s+/);

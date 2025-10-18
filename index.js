@@ -13,6 +13,33 @@ import { errorI18n       } from "./utils/etrans.js";
 import { handleNnkr      } from "./commands/nnkr.js";
 import { handleFastcheck } from "./commands/fsck.js";
 
+/**
+ * Cloudflare Worker entry point for handling Telegram bot updates.
+ *
+ * This default export object provides a `fetch` handler that:
+ * 1. Parses incoming Telegram webhook requests.
+ * 2. Extracts the message text, chat ID, user ID, username, and chat title.
+ * 3. Matches the message against known bot commands (e.g., /roll, /st, /nn, /li, /ti, /ra, /getst, /syno, /sc, /nnkr, /fsck).
+ * 4. Executes the corresponding command handler and sends the reply via `handleMessage`.
+ * 5. Handles `/help` commands and paginated help callback queries.
+ * 6. Handles errors gracefully and logs relevant messages.
+ *
+ * @default
+ * @property {Function} fetch - The main request handler for the Worker.
+ * 
+ * @param {Request} request - The incoming HTTP request (Telegram webhook POST).
+ * @param {Object} env - Environment object containing KV namespaces and other bindings.
+ * @param {Object} ctx - Context object provided by Cloudflare Worker runtime.
+ * 
+ * @returns {Promise<Response>} - Always returns a Response with body "OK" or an error status.
+ *
+ * @example
+ * // Deploy as a Cloudflare Worker with the route /telegram-webhook
+ * export default { fetch };
+ *
+ * // Telegram sends a POST request with update JSON
+ * // The Worker parses and dispatches to the appropriate command handler
+ */
 export default {
     async fetch(request, env, ctx) {
         const url = new URL(request.url);

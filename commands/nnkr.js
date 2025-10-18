@@ -5,6 +5,33 @@ import { generateAdvancedProblem } from "../utils/mahjong/nnkrAdvance.js";
 const botId = "xxxxxxxxx";
 const WIND_NAMES = ["东", "南", "西", "北"];
 
+/**
+ * Handles a "何切" (best discard) Mahjong problem command.
+ *
+ * Depending on the message argument, this funcion supports:
+ * 1. Generating a normal problem (`/nnkr`)
+ * 2. Generating an advanced problem (`/nnkr adv`)
+ * 3. Responding with a player's discard choice (`/nnkr <tile>`), verifying correctness
+ *
+ * Problems are stored temporarily in chat attributes and expire after 5 minutes.
+ *
+ * @param {Object} env - The environment/context object for storage operations.
+ * @param {string} message - The command message, e.g., "/nnkr", "/nnkr adv", or "/nnkr 3s".
+ * @param {string} chatId - The unique identifier of the chat where the command is issued.
+ * @returns {Promise<string>} - A formatted string describing the problem, instructions, or the result of a discard attempt.
+ *
+ * @example
+ * // Generate a normal "何切" problem
+ * await handleNnkr(env, "/nnkr", "123");
+ *
+ * @example
+ * // Generate an advanced "何切" problem
+ * await handleNnkr(env, "/nnkr adv", "123");
+ *
+ * @example
+ * // Submit a discard for evaluation
+ * await handleNnkr(env, "/nnkr 3s", "123");
+ */
 export async function handleNnkr(env, message, chatId) {
     const parts = message.trim().split(/\s+/);
     const arg = parts[1];

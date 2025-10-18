@@ -3,6 +3,36 @@ import { normalizeKey  } from "../utils/utils.js";
 import { rollDice      } from "../utils/dice.js";
 import { escapeHtml } from "../utils/utils.js";
 
+/**
+ * Handles a random attribute check command.
+ *
+ * Rolls 1d100 to determine success or failure based on the user's attribute value.
+ * Supports optional temporary values if the attribute is not found.
+ * The function returns a formatted message describing the check result.
+ *
+ * Success thresholds:
+ * - 1: Critical Success ("大成功")
+ * - 2–floor(value/5): Extreme Success ("极难成功")
+ * - floor(value/5)+1–floor(value/2): Hard Success ("困难成功")
+ * - floor(value/2)+1–value: Success ("成功")
+ * - >= value+1: Failure ("失败")
+ * - 100: Critical Failure ("大失败")
+ *
+ * @param {Object} env - The environment/context object for storage operations.
+ * @param {string} message - The command message, e.g., "/ra Strength 75".
+ * @param {string} userId - The unique identifier of the user issuing the check.
+ * @param {string} chatId - The unique identifier of the chat where the command is issued.
+ * @param {string} userName - The display name of the user, can be overridden by stored nickname.
+ * @returns {Promise<string>} - A formatted string describing the result of the attribute check.
+ *
+ * @example
+ * // Perform a check using a stored attribute
+ * await handleRa(env, "/ra Strength", "123", "456", "Alice");
+ *
+ * @example
+ * // Perform a check with a temporary value
+ * await handleRa(env, "/ra Luck 50", "123", "456", "Alice");
+ */
 export async function handleRa(env, message, userId, chatId, userName) {
     const parts = message.trim().split(/\s+/);
     if (parts.length < 2) {

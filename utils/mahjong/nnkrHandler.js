@@ -2,6 +2,13 @@ import { shantenNormal } from "./shantenCalculator.js";
 import { improvementCount } from "./helper.js";
 import { shuffle } from "../utils.js";
 
+/**
+ * Determines the best discard(s) for a hand based on shanten and improvement count.
+ * @param {number[]} hand - Array of 14 tile IDs representing a Mahjong hand.
+ * @returns {{ bestShanten: number, candidates: Array<{discard: number, shanten: number, improvements: number[]}> }}
+ *  - bestShanten: minimal shanten value after discard
+ *  - candidates: list of candidate discards achieving bestShanten, each with improvements
+ */
 export function bestDiscard(hand) {
     let bestShanten = Infinity;
     let candidates = [];
@@ -28,6 +35,11 @@ const SUIT_TILES = {
     sou: Array.from({ length: 9 }, (_, i) => 25 + i),
 };
 
+/**
+ * Counts the number of complete melds (mentsu) in a tile count array.
+ * @param {number[]} counts - Array of 34 tile counts.
+ * @returns {number} - Number of melds.
+ */
 function countMentsu(counts) {
     let mentsu = 0;
     for (let i = 0; i < 34; i++) {
@@ -48,10 +60,29 @@ function countMentsu(counts) {
     return mentsu;
 }
 
+/**
+ * Draws random tiles from a given tile set.
+ *
+ * Never used.
+ * @param {number} count - Number of tiles to draw.
+ * @param {number[]} tiles - Array of possible tile IDs.
+ * @returns {number[]} - Randomly selected tiles.
+ */
 function drawTiles(count, tiles) {
     return Array(count).fill(0).map(() => tiles[Math.floor(Math.random() * tiles.length)]);
 }
 
+/**
+ * Generates a random Mahjong hand for NNKR practice.
+ * Ensures hand meets minimum shanten and meld requirements.
+ * @param {number} [minShanten=1] - Minimum shanten allowed.
+ * @param {number} [maxShanten=4] - Maximum shanten allowed.
+ * @returns {{ hand: number[], shanten: number, mentsu: number, useHonors: boolean }}
+ *  - hand: Array of 14 tile IDs
+ *  - shanten: Shanten value
+ *  - mentsu: Number of complete melds
+ *  - useHonors: Whether honors are included in the hand
+ */
 export function generateProblem(minShanten = 1, maxShanten = 4) {
     while (true) {
         let hand = [];

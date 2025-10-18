@@ -3,12 +3,23 @@ import { shuffle } from "../utils.js";
 import { shantenNormal } from "./shantenCalculator.js";
 import { improvementCount } from "./helper.js";
 
+/**
+ * Samples a value from a Gamma-like distribution.
+ * @param {number} shape - Shape parameter (k), default 2.5.
+ * @param {number} scale - Scale parameter (θ), default 3.
+ * @returns {number} - Rounded gamma-distributed sample.
+ */
 function gammaSample(shape = 2.5, scale = 3) {
     let sum = 0;
     for (let i = 0; i < shape; i++) sum += -Math.log(Math.random());
     return Math.round(sum * scale);
 }
 
+/**
+ * Returns the next tile in sequence (used for Dora indicator calculation).
+ * @param {number} t - Tile ID (0–33).
+ * @returns {number} - Tile ID of the next tile.
+ */
 function nextTile(t) {
     if (t >= 0 && t <= 3) return (t + 1) % 4; // 东南西北
     if (t >= 4 && t <= 6) return (t + 1) % 3 + 4; // 中发白
@@ -17,6 +28,10 @@ function nextTile(t) {
     return mod9 === 8 ? base : t + 1;
 }
 
+/**
+ * Generates a random set of Dora indicators and corresponding Dora tiles.
+ * @returns {{ indicators: number[], doraTiles: number[] }} - Indicators and Dora tiles.
+ */
 function generateDora() {
     const numDora = Math.ceil(Math.random() * 3); // 1–4
     const indicators = [];
@@ -27,11 +42,27 @@ function generateDora() {
     const doraTiles = indicators.map(nextTile);
     return { indicators, doraTiles };
 }
+
+/**
+ * Computes Gaussian probability density.
+ * @param {number} x - Input value.
+ * @param {number} mu - Mean.
+ * @param {number} sigma - Standard deviation.
+ * @returns {number} - Gaussian value.
+ */
 function gaussian(x, mu, sigma) {
     return Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2));
 }
 
-
+/**
+ * Computes discard weights for advanced problem selection.
+ * @param {Array<{discard: number, improvements: number[]}>} candidates - Candidate discards.
+ * @param {number[]} doraTiles - Array of Dora tile IDs.
+ * @param {number} roundWind - Round wind ID (0–3).
+ * @param {number} seatWind - Seat wind ID (0–3).
+ * @param {number} [turn=1] - Current turn number.
+ * @returns {number[]} - Array of weights corresponding to candidates.
+ */
 export function computeWeights(candidates, doraTiles, roundWind, seatWind, turn = 1) {
     const weights = [];
     const sigmaBase = 1.2;
@@ -70,7 +101,22 @@ export function computeWeights(candidates, doraTiles, roundWind, seatWind, turn 
     return weights;
 }
 
-
+/**
+ * Generates an advanced Mahjong discard problem for NNKR practice.
+ * @param {number} [minShanten=1] - Minimum shanten value for problem hand.
+ * @param {number} [maxShanten=4] - Maximum shanten value for problem hand.
+ * @returns {object} - Problem object containing:
+ *  - hand: number[] - Hand tiles
+ *  - shanten: number - Current shanten
+ *  - mentsu: array - Meld structure
+ *  - useHonors: boolean
+ *  - doraIndicators: number[]
+ *  - doraTiles: number[]
+ *  - roundWind: number
+ *  - seatWind: number
+ *  - turn: number
+ *  - weights: number[] - Computed discard weights
+ */
 export function generateAdvancedProblem(minShanten = 1, maxShanten = 4) {
     const { hand, shanten, mentsu, useHonors } = generateProblem(minShanten, maxShanten);
     const { indicators, doraTiles } = generateDora();

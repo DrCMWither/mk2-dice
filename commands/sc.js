@@ -2,6 +2,18 @@ import { getAttributes, setAttribute } from "../utils/storage.js";
 import { rollDice } from "../utils/dice.js";
 import { normalizeKey,escapeHtml } from "../utils/utils.js";
 
+/**
+ * Parses a dice expression or integer string.
+ * This fuction will be soon merged into utils.js.
+ *
+ * Supports:
+ *  - plain integers: "10" → 10
+ *  - dice notation: "2d6" → sum of rolling 2 six-sided dice
+ *
+ * @param {string} expr - The expression to parse.
+ * @returns {number} - The calculated integer result.
+ */
+
 function parseDiceExpr(expr) {
     expr = expr.trim();
     if (/^\d+$/.test(expr)) return parseInt(expr, 10);
@@ -15,6 +27,25 @@ function parseDiceExpr(expr) {
     return 0;
 }
 
+/**
+ * Handles a sanity check command (/sc) for a user.
+ *
+ * Performs a POW/Will check against a user’s Will attribute.
+ * If the check fails, reduces the Sanity attribute based on the given expressions.
+ *
+ * @param {Object} env - The environment/context object for storage operations.
+ * @param {string} message - The command message, e.g., "/sc 1d6/2d6".
+ *                           Format: <expression1>/<expression2>
+ *                           expression1 = value deducted on success
+ *                           expression2 = value deducted on failure
+ * @param {string} userId - The unique identifier of the user performing the check.
+ * @param {string} chatId - The unique identifier of the chat where the command is issued.
+ * @param {string} userName - The display name of the user, can be overridden by stored nickname.
+ * @returns {Promise<string>} - A formatted string describing the roll, result, and sanity reduction.
+ *
+ * @example
+ * await handleSc(env, "/sc 1d6/2d6", "123", "456", "Alice");
+ */
 export async function handleSc(env, message, userId, chatId, userName) {
     const parts = message.trim().split(/\s+/);
     if (parts.length < 2) {
