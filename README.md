@@ -8,6 +8,6 @@ A free instance is available at telegram@cmwasp_dice_bot.
 
 2. Register your Bot ID/token/secret in the corresponding file, or set enviroment variables;
 
-3. Create a new KB table and sent both [synonyms](sympotms.json) and [synonyms](./synonyms.json) to this KV table;
+3. Create a new KV table and sent both [synonyms](sympotms.json) and [synonyms](./synonyms.json) to this KV table;
 
 4. Upon completion, bind the Telegram API and use the /help command for fsck.
