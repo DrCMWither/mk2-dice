@@ -1,0 +1,10 @@
+{
+    "scripts": {
+        "upload:kv": "node build/utils/upload-kv.js",
+        "deploy": "npm run upload:kv && npx wrangler deploy"
+        },
+    "dependencies": {
+        "dotenv": "^16.4.0",
+        "toml": "^3.0.0"
+    }
+}
