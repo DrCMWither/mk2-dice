@@ -1,5 +1,3 @@
-const BOT_TOKEN      = "xxxxxxxx";
-
 /**
  * Sends or edits a message via the Telegram Bot API.
  *
@@ -24,8 +22,8 @@ const BOT_TOKEN      = "xxxxxxxx";
  */
 export async function handleMessage(chatId, payload, options = {}) {
     const url = options.edit
-        ? `https://api.telegram.org/bot${BOT_TOKEN}/editMessageText`
-        : `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+        ? `https://api.telegram.org/bot${env.BOT_TOKEN}/editMessageText`
+        : `https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`;
 
     const body = {
         chat_id: chatId,

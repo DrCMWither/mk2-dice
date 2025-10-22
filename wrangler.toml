@@ -1,0 +1,8 @@
+name = "example-dice-bot"
+main = "index.js"
+compatibility_date = "2025-10-22"
+
+[vars]
+SERVICE_NAME = "Example"
+BOT_TOKEN = "xxxxxxxx"
+BOT_ID = "xxxxxxxx"

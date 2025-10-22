@@ -26,11 +26,11 @@ import { handleFastcheck } from "./commands/fsck.js";
  *
  * @default
  * @property {Function} fetch - The main request handler for the Worker.
- * 
+ *
  * @param {Request} request - The incoming HTTP request (Telegram webhook POST).
  * @param {Object} env - Environment object containing KV namespaces and other bindings.
  * @param {Object} ctx - Context object provided by Cloudflare Worker runtime.
- * 
+ *
  * @returns {Promise<Response>} - Always returns a Response with body "OK" or an error status.
  *
  * @example
