@@ -1,8 +1,13 @@
 name = "example-dice-bot"
-main = "index.js"
+main = "src/index.js"
 compatibility_date = "2025-10-22"
 
 [vars]
 SERVICE_NAME = "Example"
 BOT_TOKEN = "xxxxxxxx"
 BOT_ID = "xxxxxxxx"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "YOUR_NAMESPACE_ID_HERE"
+preview_id = "YOUR_PREVIEW_ID_HERE"
