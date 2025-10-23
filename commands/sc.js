@@ -1,31 +1,6 @@
 import { getAttributes, setAttribute } from "../utils/storage.js";
-import { rollDice } from "../utils/dice.js";
+import { rollDice, parseDiceExpression } from "../utils/dice.js";
 import { normalizeKey,escapeHtml } from "../utils/utils.js";
-
-/**
- * Parses a dice expression or integer string.
- * This fuction will be soon merged into utils.js.
- *
- * Supports:
- *  - plain integers: "10" → 10
- *  - dice notation: "2d6" → sum of rolling 2 six-sided dice
- *
- * @param {string} expr - The expression to parse.
- * @returns {number} - The calculated integer result.
- */
-
-function parseDiceExpr(expr) {
-    expr = expr.trim();
-    if (/^\d+$/.test(expr)) return parseInt(expr, 10);
-    const m = expr.match(/^(\d+)d(\d+)$/i);
-    if (m) {
-        const n     = parseInt(m[1], 10);
-        const sides = parseInt(m[2], 10);
-        const rolls = rollDice(n, sides);
-        return rolls.reduce((a, b) => a + b, 0);
-    }
-    return 0;
-}
 
 /**
  * Handles a sanity check command (/sc) for a user.
@@ -34,7 +9,7 @@ function parseDiceExpr(expr) {
  * If the check fails, reduces the Sanity attribute based on the given expressions.
  *
  * @param {Object} env - The environment/context object for storage operations.
- * @param {string} message - The command message, e.g., "/sc 1d6/2d6".
+ * @param {string} message - The command message, e.g., "/sc 1/1d6".
  *                           Format: <expression1>/<expression2>
  *                           expression1 = value deducted on success
  *                           expression2 = value deducted on failure
@@ -53,9 +28,7 @@ export async function handleSc(env, message, userId, chatId, userName) {
     }
 
     const storedName = await getAttributes(env, userId, chatId, true);
-    if (storedName) {
-        userName = storedName;
-    }
+    if (storedName) userName = storedName;
 
     const exprParts = parts[1].split("/");
     if (exprParts.length !== 2) return "表达式格式错误，应为 <表达式1>/<表达式2>";
@@ -87,7 +60,13 @@ export async function handleSc(env, message, userId, chatId, userName) {
         ? expr1
         : expr2;
 
-    const reduceValue = parseDiceExpr(reduceExpr);
+    const parsed = parseDiceExpression(reduceExpr);
+    if (!parsed) return `无法解析表达式: ${reduceExpr}`;
+
+    const { count, sides, multiplier, modifier } = parsed;
+    const rolls = rollDice(count, sides);
+    const sum = rolls.reduce((a, b) => a + b, 0);
+    const reduceValue = sum * multiplier + modifier;
 
     const newSanity = Math.max(0, attrs[sanityKey] - reduceValue);
     await setAttribute(env, userId, chatId, sanityKey, newSanity);

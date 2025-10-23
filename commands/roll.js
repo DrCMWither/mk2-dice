@@ -1,4 +1,4 @@
-import { rollDice } from "../utils/dice.js";
+import { rollDice, parseDiceExpression } from "../utils/dice.js";
 import { getAttributes } from "../utils/storage.js";
 import { escapeHtml } from "../utils/utils.js";
 
@@ -6,12 +6,12 @@ import { escapeHtml } from "../utils/utils.js";
  * Handles a dice roll command with advanced notation.
  *
  * Supports the following dice notation:
- *   /r NdM[*X][+Y]
+ *   /r NdM[*X][\pm Y]
  *   where:
  *     - N = number of dice (default 1)
  *     - M = number of sides per die (default 6)
  *     - *X = multiplier (optional, default 1)
- *     - +Y = modifier (optional, default 0)
+ *     - \pm Y = modifier (optional, default 0)
  *
  * Examples of valid commands:
  *   /r 3d6
@@ -31,23 +31,21 @@ import { escapeHtml } from "../utils/utils.js";
  * await handleRoll(env, "/r 2d10*2+5", "123", "456", "Alice");
  */
 export async function handleRoll(env, message, userId, chatId, userName) {
-    const parts = message.match(/^\/(roll|r|rh)(?:\s+(\d*)d(\d+)(?:\*(\d+))?([+-]\d+)?)?$/i);
-    if (!parts) return "格式错误，请使用 /r NdM[*X][+Y]";
+    const match = message.match(/^\/(roll|r|rh)(?:\s+(.*))?$/i);
+    if (!match) return "格式错误，请使用 /r NdM[*X][+Y]";
+
+    const expr = match[2] || "1d6";
+    const parsed = parseDiceExpression(expr);
+    if (!parsed) return "无法解析骰子表达式，请使用格式 NdM[*X][+Y]";
+
+    const { count, sides, multiplier, modifier } = parsed;
 
     const storedName = await getAttributes(env, userId, chatId, true);
     if (storedName) {
         userName = storedName;
     }
 
-    let count      = parts[2] ? parseInt(parts[2], 10) : 1;
-    let sides      = parts[3] ? parseInt(parts[3], 10) : 6;
-    let multiplier = parts[4] ? parseInt(parts[4], 10) : 1;
-    let modifier   = parts[5] ? parseInt(parts[5], 10) : 0;
-
     if (sides < 1) return "骰子的面数必须至少为 1!";
-
-    if (count > 50) count = 50;
-    if (count < 1 ) count = 1;
 
     const rolls = rollDice(count, sides);
     const sum   = rolls.reduce((a, b) => a + b, 0);
