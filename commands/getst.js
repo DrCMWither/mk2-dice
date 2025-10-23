@@ -58,20 +58,20 @@ export async function handleGetst(env, message, userId, chatId, chatTitle, userN
                     }
                 }
             }
-            return text.trim();
+            return escapeHtml(text.trim());
         }
 
         // Default: current group
         const attrs = await getAttributes(env, userId, chatId);
         if (!attrs || Object.keys(attrs).length === 0) {
-            return `您在群 ${escapeHtml(chatTitle) || chatId} 没有设置任何属性。`;
+            return `您在群 ${chatTitle || chatId} 没有设置任何属性。`;
         }
 
         let text = `${escapeHtml(userName)} 在当前群的属性：\n`;
         for (let [k, v] of Object.entries(attrs)) {
-            text += `- ${escapeHtml(k)}: ${escapeHtml(v)}\n`;
+            text += `- ${k}: ${v}\n`;
         }
-        return text.trim();
+        return escapeHtml(text.trim());
     } catch (err) {
         console.error("[ERROR] handleGetst failed:", err);
         return "获取属性时发生错误，请稍后再试。";
