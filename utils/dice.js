@@ -16,15 +16,24 @@ export function rollDice(n, m) {
 /**
  * Parse the expression of a dice (e.g., "3d6*2+5").
  * @param {string} expr - The expression of the dice.
- * @returns {object|null} Parse result or null
+ * @returns {object | null} Parse result or null
  */
 export function parseDiceExpression(expr) {
     expr = expr.trim();
+    const full = /^(\d+)#\(?(.+?)\)?$/;
+    const match = expr.match(full);
+    if (match) {
+        const repeat = parseInt(match[1], 10);
+        const innerExpr = match[2].trim();
+        const parsedInner = parseDiceExpression(innerExpr);
+        if (!parsedInner) return null;
+        return { ...parsedInner, repeat };
+    }
 
     // Handle constants (reqd. by @function )
     if (/^\d+$/.test(expr)) {
         const val = parseInt(expr, 10);
-        return { count: 0, sides: 0, multiplier: 1, modifier: val };
+        return { count: 0, sides: 0, multiplier: 1, modifier: val, repeat: 1 };
     }
 
     const pattern = /^(\d*)d(\d+)(?:\*(\d+))?([+-]\d+)?$/i;
@@ -38,5 +47,5 @@ export function parseDiceExpression(expr) {
 
     if (sides < 1 || count < 1) return null;
 
-    return { count, sides, multiplier, modifier };
+    return { count, sides, multiplier, modifier, repeat: 1 };
 }

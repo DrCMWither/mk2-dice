@@ -38,7 +38,7 @@ export async function handleRoll(env, message, userId, chatId, userName) {
     const parsed = parseDiceExpression(expr);
     if (!parsed) return "无法解析骰子表达式，请使用格式 NdM[*X][+Y]";
 
-    const { count, sides, multiplier, modifier } = parsed;
+    const { count, sides, multiplier, modifier, repeat = 1 } = parsed;
 
     const storedName = await getAttributes(env, userId, chatId, true);
     if (storedName) {
@@ -47,17 +47,35 @@ export async function handleRoll(env, message, userId, chatId, userName) {
 
     if (sides < 1) return "骰子的面数必须至少为 1!";
 
-    const rolls = rollDice(count, sides);
-    const sum   = rolls.reduce((a, b) => a + b, 0);
-    const total = sum * multiplier + modifier;
+    let results = [];
+    for (let i = 1; i < repeat; i++) {
+        const rolls = rollDice(count, sides);
 
-    let diceNotation = `${count}d${sides}`;
-    if (multiplier !== 1) diceNotation += `*${multiplier}`;
-    if (modifier !== 0) diceNotation += (modifier > 0 ? "+" : "") + modifier;
+        const sum   = rolls.reduce((a, b) => a + b, 0);
+        const total = sum * multiplier + modifier;
 
-    let expanded = rolls.join(" + ");
-    if (multiplier !== 1) expanded = `(${expanded})*${multiplier}`;
-    if (modifier !== 0) expanded += ` (${modifier > 0 ? "+" : ""}${modifier})`;
+        let diceNotation = `${count}d${sides}`;
+        if (multiplier !== 1) diceNotation += `*${multiplier}`;
+        if (modifier !== 0) diceNotation += (modifier > 0 ? "+" : "") + modifier;
 
-    return `🎲 ${escapeHtml(userName)} 的投掷结果: ${diceNotation} = ${expanded}\n合计: ${total}`;
+        let expanded = rolls.join(" + ");
+        if (multiplier !== 1) expanded = `(${expanded})*${multiplier}`;
+        if (modifier !== 0) expanded += ` (${modifier > 0 ? "+" : ""}${modifier})`;
+
+        results.push( {diceNotation, expanded, total} );
+    }
+
+    let output = `🎲 ${escapeHtml(userName)} 的投掷结果:\n`;
+    if (repeat > 1) {
+        results.forEach((r, i) => {
+            output += `#${i + 1}: ${r.diceNotation} = ${r.expanded} → 合计 ${r.total}\n`;
+        });
+        const grandTotal = results.reduce((a, b) => a + b.total, 0);
+        output += `——\n总和: ${grandTotal}`;
+    } else {
+        const r = results[0];
+        output += `${r.diceNotation} = ${r.expanded}\n合计: ${r.total}`;
+    }
+
+    return output.trim();
 }
