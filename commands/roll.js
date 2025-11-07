@@ -32,26 +32,25 @@ import { escapeHtml } from "../utils/utils.js";
  */
 export async function handleRoll(env, message, userId, chatId, userName) {
     const match = message.match(/^\/(roll|r|rh)(?:\s+(.*))?$/i);
-    if (!match) return "格式错误，请使用 /r NdM[*X][+Y]";
+    if (!match) return "格式错误，请使用 /r [C#]NdM[*X][+Y]";
 
     const expr = match[2] || "1d6";
     const parsed = parseDiceExpression(expr);
-    if (!parsed) return "无法解析骰子表达式，请使用格式 NdM[*X][+Y]";
+    if (!parsed) return "无法解析骰子表达式，请使用格式 [C#]NdM[*X][+Y])";
 
     const { count, sides, multiplier, modifier, repeat = 1 } = parsed;
 
-    const storedName = await getAttributes(env, userId, chatId, true);
-    if (storedName) {
-        userName = storedName;
+    if (sides < 1 && count === 0) {
+        return `🎲 ${escapeHtml(userName)} 的结果: ${modifier}`;
     }
-
     if (sides < 1) return "骰子的面数必须至少为 1!";
 
-    let results = [];
-    for (let i = 1; i < repeat; i++) {
+    const storedName = await getAttributes(env, userId, chatId, true);
+    if (storedName) userName = storedName;
+    const results = [];
+    for (let i = 0; i < repeat; i++) {
         const rolls = rollDice(count, sides);
-
-        const sum   = rolls.reduce((a, b) => a + b, 0);
+        const sum = rolls.reduce((a, b) => a + b, 0);
         const total = sum * multiplier + modifier;
 
         let diceNotation = `${count}d${sides}`;
@@ -62,7 +61,7 @@ export async function handleRoll(env, message, userId, chatId, userName) {
         if (multiplier !== 1) expanded = `(${expanded})*${multiplier}`;
         if (modifier !== 0) expanded += ` (${modifier > 0 ? "+" : ""}${modifier})`;
 
-        results.push( {diceNotation, expanded, total} );
+        results.push({ diceNotation, expanded, total });
     }
 
     let output = `🎲 ${escapeHtml(userName)} 的投掷结果:\n`;

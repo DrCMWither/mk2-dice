@@ -1,17 +1,19 @@
-import { handleHelp      } from "../commands/help.js";
-import { handleRoll      } from "../commands/roll.js";
-import { handleSt        } from "../commands/st.js";
-import { handleRa        } from "../commands/ra.js";
-import { handleGetst     } from "../commands/getst.js";
-import { handleSynonyms  } from "../commands/syno.js";
-import { handleSc        } from "../commands/sc.js";
+import { handleHelp      } from "./commands/help.js";
+import { handleRoll      } from "./commands/roll.js";
+import { handleSt        } from "./commands/st.js";
+import { handleRa        } from "./commands/ra.js";
+import { handleGetst     } from "./commands/getst.js";
+import { handleSynonyms  } from "./commands/syno.js";
+import { handleSc        } from "./commands/sc.js";
 import { handleLi,
-         handleTi        } from "../commands/insanity.js";
-import { handleName      } from "../commands/nn.js";
-import { handleMessage   } from "../utils/message.js";
-import { errorI18n       } from "../utils/etrans.js";
-import { handleNnkr      } from "../commands/nnkr.js";
+         handleTi        } from "./commands/insanity.js";
+import { handleName      } from "./commands/nn.js";
+import { handleMessage   } from "./utils/message.js";
+import { errorI18n       } from "./utils/etrans.js";
+import { handleNnkr      } from "./commands/nnkr.js";
 import { handleFastcheck } from "./commands/fsck.js";
+import { jrrp            } from "./commands/jrrp.js";
+
 
 /**
  * Cloudflare Worker entry point for handling Telegram bot updates.
@@ -63,6 +65,7 @@ export default {
         let reply = null;
 
         const commands = {
+            jrrp:  async () => jrrp           (env,          userId, chatId,            userName),
             li:    async () => handleLi       (env                                              ),
             nn:    async () => handleName     (env, message, userId, chatId, chatTitle, userName),
             roll:  async () => handleRoll     (env, message, userId, chatId,            userName),
