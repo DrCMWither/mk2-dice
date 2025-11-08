@@ -69,9 +69,10 @@ export default {
             li:    async () => handleLi       (env                                              ),
             nn:    async () => handleName     (env, message, userId, chatId, chatTitle, userName),
             roll:  async () => handleRoll     (env, message, userId, chatId,            userName),
-            r:     async () => handleRoll     (env, message, userId, chatId,            userName),
+            r:     async () => handleRoll     (env, message, userId, chatId, false,     userName),
+            rq:    async () => handleRoll     (env, message, userId, chatId, true,      userName),
             ra:    async () => handleRa       (env, message, userId, chatId,            userName),
-            rh:    async () => handleRoll     (env, message, userId, null,              userName),
+            rh:    async () => handleRoll     (env, message, userId, null,   false,     userName),
             st:    async () => handleSt       (env, message, userId, chatId, chatTitle          ),
             getst: async () => handleGetst    (env, message, userId, chatId, chatTitle, userName),
             syno:  async () => handleSynonyms (env, message                                     ),
@@ -81,12 +82,12 @@ export default {
             fsck:  async () => handleFastcheck(                                                 ),
         };
 
-        const helpMatch = message.match(/^\/help(?:@cmwasp_dice_bot)?$/);
+        const helpMatch = message.match(/^\/help(?:@${env.BOT_NAME})?$/);
         if (helpMatch) {
             console.log(`[LOG] Matched /help for chat ${chatId}. Sending help message.`);
             await handleMessage(chatId, handleHelp(0));
         } else {
-            const cmdMatch = message.slice(0, 1024).match(/^\/(\w+)(?:@cmwasp_dice_bot)?(?:\s+(.+))?$/);
+            const cmdMatch = message.slice(0, 1024).match(/^\/(\w+)(?:@${env.BOT_NAME})?(?:\s+(.+))?$/);
             if (cmdMatch) {
                 const cmd = cmdMatch[1];
                 if (commands[cmd]) {

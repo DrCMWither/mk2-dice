@@ -6,6 +6,7 @@ compatibility_date = "2025-10-22"
 SERVICE_NAME = "Example"
 BOT_TOKEN = "xxxxxxxx"
 BOT_ID = "xxxxxxxx"
+BOT_NMAE = "xxxxxxxx"
 
 [[kv_namespaces]]
 binding = "KV"

@@ -1,9 +1,11 @@
 import { escapeHtml } from "../utils/utils.js";
 
 const commands = [
-    "/roll 或 /r NdM[*X][+Y] - 投掷骰子",
+    "/roll 或 /r [C#]NdM[*X][+Y] - 投掷骰子",
     "/ra <属性> [临时值] - 属性检定",
-    "/rh NdM[*X][+Y] - 投掷暗骰",
+    "/rh [C#]NdM[*X][+Y] - 投掷暗骰",
+    "/rq - 投掷量子骰",
+    "/jrrp - 查看今日人品",
     "/nn <昵称> - 设置当前群昵称",
     "/nn clear - 清除当前群昵称",
     "/nn clearall - 清除所有群昵称",
