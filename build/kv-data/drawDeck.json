@@ -1,0 +1,990 @@
+{
+    "塔罗": {
+        "1": {
+            "name": "愚者 The Fool",
+            "upright": "新的开始、冒险、自由的心、纯真与信任。",
+            "reversed": "鲁莽、冲动、逃避现实、缺乏计划。"
+        },
+        "2": {
+            "name": "魔术师 The Magician",
+            "upright": "意志的实现、创造力、掌握局面、潜能的展现。",
+            "reversed": "欺诈、滥用力量、无能为力、缺乏专注。"
+        },
+        "3": {
+            "name": "女祭司 The High Priestess",
+            "upright": "直觉、神秘、潜意识、隐藏的智慧。",
+            "reversed": "隐瞒、困惑、情绪失衡、误解。"
+        },
+        "4": {
+            "name": "女皇 The Empress",
+            "upright": "丰饶、创造、母性、感性与自然的力量。",
+            "reversed": "压抑、依赖、停滞、创造力受阻。"
+        },
+        "5": {
+            "name": "皇帝 The Emperor",
+            "upright": "权威、结构、稳定、理性与秩序。",
+            "reversed": "专制、失控、固执、失去方向。"
+        },
+        "6": {
+            "name": "教皇 The Hierophant",
+            "upright": "传统、信仰、道德准则、导师与制度。",
+            "reversed": "教条、反叛、虚伪的权威、思想桎梏。"
+        },
+        "7": {
+            "name": "恋人 The Lovers",
+            "upright": "爱情、抉择、和谐、价值观一致。",
+            "reversed": "不协调、分离、诱惑、价值冲突。"
+        },
+        "8": {
+            "name": "战车 The Chariot",
+            "upright": "胜利、控制力、决心、意志战胜困难。",
+            "reversed": "失控、挫败、犹豫不决、内在冲突。"
+        },
+        "9": {
+            "name": "力量 Strength",
+            "upright": "勇气、内在力量、自我掌控、温柔的坚韧。",
+            "reversed": "软弱、失去信心、情绪失衡、屈服。"
+        },
+        "10": {
+            "name": "隐者 The Hermit",
+            "upright": "内省、独处、寻求真理、精神指引。",
+            "reversed": "孤立、逃避、迷失、拒绝反思。"
+        },
+        "11": {
+            "name": "命运之轮 Wheel of Fortune",
+            "upright": "转机、命运循环、机遇、意外的变化。",
+            "reversed": "停滞、厄运、错失良机、抗拒变化。"
+        },
+        "12": {
+            "name": "正义 Justice",
+            "upright": "公正、因果、诚实、理性判断。",
+            "reversed": "偏见、不公平、逃避责任、不诚实。"
+        },
+        "13": {
+            "name": "倒吊人 The Hanged Man",
+            "upright": "牺牲、顿悟、放下执念、换位思考。",
+            "reversed": "抗拒改变、无谓的牺牲、停滞不前。"
+        },
+        "14": {
+            "name": "死神 Death",
+            "upright": "结束、重生、转化、解脱旧物。",
+            "reversed": "恐惧变化、停滞、拖延、拒绝放手。"
+        },
+        "15": {
+            "name": "节制 Temperance",
+            "upright": "平衡、节制、调和、疗愈。",
+            "reversed": "极端、冲突、过度、失衡。"
+        },
+        "16": {
+            "name": "恶魔 The Devil",
+            "upright": "诱惑、束缚、欲望、物质依附。",
+            "reversed": "解放、自觉、摆脱依赖、重获自由。"
+        },
+        "17": {
+            "name": "塔 The Tower",
+            "upright": "突变、崩溃、觉醒、真相显露。",
+            "reversed": "灾难延迟、恐惧改变、拒绝觉醒。"
+        },
+        "18": {
+            "name": "星星 The Star",
+            "upright": "希望、灵感、信念、治愈与愿景。",
+            "reversed": "失望、幻灭、信念崩塌、自我怀疑。"
+        },
+        "19": {
+            "name": "月亮 The Moon",
+            "upright": "直觉、梦境、潜意识、不确定与幻象。",
+            "reversed": "欺骗、混乱、精神紧张、幻觉破灭。"
+        },
+        "20": {
+            "name": "太阳 The Sun",
+            "upright": "成功、快乐、真诚、光明与成长。",
+            "reversed": "骄傲、自我中心、短暂快乐、虚假安慰。"
+        },
+        "21": {
+            "name": "审判 Judgement",
+            "upright": "觉醒、赦免、重生、对过去的反省。",
+            "reversed": "逃避、自我否定、无法原谅过去。"
+        },
+        "22": {
+            "name": "世界 The World",
+            "upright": "完成、整合、圆满、自由与新阶段。",
+            "reversed": "未完成、局限、延迟、循环未终。"
+        }
+    },
+    "完整塔罗": {
+        "1": {
+            "name": "愚者 The Fool",
+            "upright": "新的开始、冒险、自由的心、纯真与信任。",
+            "reversed": "鲁莽、冲动、逃避现实、缺乏计划。"
+        },
+        "2": {
+            "name": "魔术师 The Magician",
+            "upright": "意志的实现、创造力、掌握局面、潜能的展现。",
+            "reversed": "欺诈、滥用力量、无能为力、缺乏专注。"
+        },
+        "3": {
+            "name": "女祭司 The High Priestess",
+            "upright": "直觉、神秘、潜意识、隐藏的智慧。",
+            "reversed": "隐瞒、困惑、情绪失衡、误解。"
+        },
+        "4": {
+            "name": "女皇 The Empress",
+            "upright": "丰饶、创造、母性、感性与自然的力量。",
+            "reversed": "压抑、依赖、停滞、创造力受阻。"
+        },
+        "5": {
+            "name": "皇帝 The Emperor",
+            "upright": "权威、结构、稳定、理性与秩序。",
+            "reversed": "专制、失控、固执、失去方向。"
+        },
+        "6": {
+            "name": "教皇 The Hierophant",
+            "upright": "传统、信仰、道德准则、导师与制度。",
+            "reversed": "教条、反叛、虚伪的权威、思想桎梏。"
+        },
+        "7": {
+            "name": "恋人 The Lovers",
+            "upright": "爱情、抉择、和谐、价值观一致。",
+            "reversed": "不协调、分离、诱惑、价值冲突。"
+        },
+        "8": {
+            "name": "战车 The Chariot",
+            "upright": "胜利、控制力、决心、意志战胜困难。",
+            "reversed": "失控、挫败、犹豫不决、内在冲突。"
+        },
+        "9": {
+            "name": "力量 Strength",
+            "upright": "勇气、内在力量、自我掌控、温柔的坚韧。",
+            "reversed": "软弱、失去信心、情绪失衡、屈服。"
+        },
+        "10": {
+            "name": "隐者 The Hermit",
+            "upright": "内省、独处、寻求真理、精神指引。",
+            "reversed": "孤立、逃避、迷失、拒绝反思。"
+        },
+        "11": {
+            "name": "命运之轮 Wheel of Fortune",
+            "upright": "转机、命运循环、机遇、意外的变化。",
+            "reversed": "停滞、厄运、错失良机、抗拒变化。"
+        },
+        "12": {
+            "name": "正义 Justice",
+            "upright": "公正、因果、诚实、理性判断。",
+            "reversed": "偏见、不公平、逃避责任、不诚实。"
+        },
+        "13": {
+            "name": "倒吊人 The Hanged Man",
+            "upright": "牺牲、顿悟、放下执念、换位思考。",
+            "reversed": "抗拒改变、无谓的牺牲、停滞不前。"
+        },
+        "14": {
+            "name": "死神 Death",
+            "upright": "结束、重生、转化、解脱旧物。",
+            "reversed": "恐惧变化、停滞、拖延、拒绝放手。"
+        },
+        "15": {
+            "name": "节制 Temperance",
+            "upright": "平衡、节制、调和、疗愈。",
+            "reversed": "极端、冲突、过度、失衡。"
+        },
+        "16": {
+            "name": "恶魔 The Devil",
+            "upright": "诱惑、束缚、欲望、物质依附。",
+            "reversed": "解放、自觉、摆脱依赖、重获自由。"
+        },
+        "17": {
+            "name": "塔 The Tower",
+            "upright": "突变、崩溃、觉醒、真相显露。",
+            "reversed": "灾难延迟、恐惧改变、拒绝觉醒。"
+        },
+        "18": {
+            "name": "星星 The Star",
+            "upright": "希望、灵感、信念、治愈与愿景。",
+            "reversed": "失望、幻灭、信念崩塌、自我怀疑。"
+        },
+        "19": {
+            "name": "月亮 The Moon",
+            "upright": "直觉、梦境、潜意识、不确定与幻象。",
+            "reversed": "欺骗、混乱、精神紧张、幻觉破灭。"
+        },
+        "20": {
+            "name": "太阳 The Sun",
+            "upright": "成功、快乐、真诚、光明与成长。",
+            "reversed": "骄傲、自我中心、短暂快乐、虚假安慰。"
+        },
+        "21": {
+            "name": "审判 Judgement",
+            "upright": "觉醒、赦免、重生、对过去的反省。",
+            "reversed": "逃避、自我否定、无法原谅过去。"
+        },
+        "22": {
+            "name": "世界 The World",
+            "upright": "完成、整合、圆满、自由与新阶段。",
+            "reversed": "未完成、局限、延迟、循环未终。"
+        },
+        "23": {
+            "name": "权杖王牌 Ace of Wands",
+            "upright": "新的灵感、激情与机会。",
+            "reversed": "缺乏动力、延迟机会。"
+        },
+        "24": {
+            "name": "权杖二 Two of Wands",
+            "upright": "计划、远见、主动探索。",
+            "reversed": "优柔寡断、逃避责任。"
+        },
+        "25": {
+            "name": "权杖三 Three of Wands",
+            "upright": "拓展、成长、等待成果。",
+            "reversed": "延迟、失望、阻碍。"
+        },
+        "26": {
+            "name": "权杖四 Four of Wands",
+            "upright": "庆祝、和谐、家园与稳定。",
+            "reversed": "冲突、家庭问题、不安定。"
+        },
+        "27": {
+            "name": "权杖五 Five of Wands",
+            "upright": "竞争、冲突、挑战。",
+            "reversed": "避免冲突、妥协、放弃。"
+        },
+        "28": {
+            "name": "权杖六 Six of Wands",
+            "upright": "胜利、认可、成就。",
+            "reversed": "失败、受阻、缺乏认可。"
+        },
+        "29": {
+            "name": "权杖七 Seven of Wands",
+            "upright": "防御、坚持、自我主张。",
+            "reversed": "退缩、畏惧、被动。"
+        },
+        "30": {
+            "name": "权杖八 Eight of Wands",
+            "upright": "快速进展、行动、消息。",
+            "reversed": "延迟、停滞、误解。"
+        },
+        "31": {
+            "name": "权杖九 Nine of Wands",
+            "upright": "坚韧、毅力、防御。",
+            "reversed": "疲惫、放弃、防御失败。"
+        },
+        "32": {
+            "name": "权杖十 Ten of Wands",
+            "upright": "责任、压力、负担。",
+            "reversed": "减轻负担、放下、逃避。"
+        },
+        "33": {
+            "name": "权杖侍者 Page of Wands",
+            "upright": "好奇、探索、消息。",
+            "reversed": "冲动、不成熟、延迟消息。"
+        },
+        "34": {
+            "name": "权杖骑士 Knight of Wands",
+            "upright": "热情、冒险、行动。",
+            "reversed": "冲动、鲁莽、失控。"
+        },
+        "35": {
+            "name": "权杖皇后 Queen of Wands",
+            "upright": "自信、魅力、创造力。",
+            "reversed": "嫉妒、控制欲、傲慢。"
+        },
+        "36": {
+            "name": "权杖国王 King of Wands",
+            "upright": "领导力、远见、责任。",
+            "reversed": "专制、暴躁、控制欲。"
+        },
+        "37": {
+            "name": "圣杯王牌 Ace of Cups",
+            "upright": "情感新起点、爱、直觉。",
+            "reversed": "情感阻塞、失落、冷漠。"
+        },
+        "38": {
+            "name": "圣杯二 Two of Cups",
+            "upright": "合作、关系、爱情。",
+            "reversed": "分歧、分离、不和。"
+        },
+        "39": {
+            "name": "圣杯三 Three of Cups",
+            "upright": "庆祝、友情、社交。",
+            "reversed": "孤立、冲突、过度放纵。"
+        },
+        "40": {
+            "name": "圣杯四 Four of Cups",
+            "upright": "沉思、情感停滞、反思。",
+            "reversed": "新机会、积极参与、觉醒。"
+        },
+        "41": {
+            "name": "圣杯五 Five of Cups",
+            "upright": "失望、遗憾、悲伤。",
+            "reversed": "放下、疗愈、希望重现。"
+        },
+        "42": {
+            "name": "圣杯六 Six of Cups",
+            "upright": "怀旧、童年、纯真。",
+            "reversed": "执着过去、难以释怀。"
+        },
+        "43": {
+            "name": "圣杯七 Seven of Cups",
+            "upright": "选择、幻想、欲望。",
+            "reversed": "困惑、幻想破灭、优柔寡断。"
+        },
+        "44": {
+            "name": "圣杯八 Eight of Cups",
+            "upright": "离开、寻求更高目标。",
+            "reversed": "逃避、犹豫、停滞。"
+        },
+        "45": {
+            "name": "圣杯九 Nine of Cups",
+            "upright": "满足、愿望成真、幸福。",
+            "reversed": "不满足、虚荣、欲望失控。"
+        },
+        "46": {
+            "name": "圣杯十 Ten of Cups",
+            "upright": "和谐、家庭幸福、满足。",
+            "reversed": "家庭不和、失望、幻灭。"
+        },
+        "47": {
+            "name": "圣杯侍者 Page of Cups",
+            "upright": "灵感、消息、好奇心。",
+            "reversed": "幼稚、情绪不稳、误导。"
+        },
+        "48": {
+            "name": "圣杯骑士 Knight of Cups",
+            "upright": "浪漫、追求梦想、提议。",
+            "reversed": "浮夸、虚假、追求不实。"
+        },
+        "49": {
+            "name": "圣杯皇后 Queen of Cups",
+            "upright": "同情、直觉、情感智慧。",
+            "reversed": "情绪不稳、过度依赖、情感操控。"
+        },
+        "50": {
+            "name": "圣杯国王 King of Cups",
+            "upright": "成熟、慈爱、平衡情感。",
+            "reversed": "冷漠、情感失衡、操控他人。"
+        },
+        "51": {
+            "name": "宝剑王牌 Ace of Swords",
+            "upright": "新的想法、真理、决心。",
+            "reversed": "混乱、犹豫、误解。"
+        },
+        "52": {
+            "name": "宝剑二 Two of Swords",
+            "upright": "决策、平衡、权衡。",
+            "reversed": "拖延、冲突、困惑。"
+        },
+        "53": {
+            "name": "宝剑三 Three of Swords",
+            "upright": "心碎、失望、痛苦。",
+            "reversed": "疗愈、释放、原谅。"
+        },
+        "54": {
+            "name": "宝剑四 Four of Swords",
+            "upright": "休息、恢复、反思。",
+            "reversed": "不安、停滞、拒绝休息。"
+        },
+        "55": {
+            "name": "宝剑五 Five of Swords",
+            "upright": "冲突、竞争、分歧。",
+            "reversed": "和解、避免冲突、失落。"
+        },
+        "56": {
+            "name": "宝剑六 Six of Swords",
+            "upright": "迁移、过渡、疗愈。",
+            "reversed": "逃避问题、停滞、阻碍。"
+        },
+        "57": {
+            "name": "宝剑七 Seven of Swords",
+            "upright": "策略、谨慎、机智。",
+            "reversed": "欺骗、失信、风险。"
+        },
+        "58": {
+            "name": "宝剑八 Eight of Swords",
+            "upright": "限制、束缚、困境。",
+            "reversed": "解脱、勇气、突破。"
+        },
+        "59": {
+            "name": "宝剑九 Nine of Swords",
+            "upright": "焦虑、恐惧、噩梦。",
+            "reversed": "释放、希望、缓解压力。"
+        },
+        "60": {
+            "name": "宝剑十 Ten of Swords",
+            "upright": "结束、失败、痛苦。",
+            "reversed": "新开始、恢复、解脱。"
+        },
+        "61": {
+            "name": "宝剑侍者 Page of Swords",
+            "upright": "好奇、观察、学习。",
+            "reversed": "误导、轻率、流言。"
+        },
+        "62": {
+            "name": "宝剑骑士 Knight of Swords",
+            "upright": "行动、决心、追求真理。",
+            "reversed": "冲动、鲁莽、攻击性。"
+        },
+        "63": {
+            "name": "宝剑皇后 Queen of Swords",
+            "upright": "智慧、独立、清晰思维。",
+            "reversed": "冷漠、苛刻、狡诈。"
+        },
+        "64": {
+            "name": "宝剑国王 King of Swords",
+            "upright": "理性、权威、公正。",
+            "reversed": "专断、不公、冷酷。"
+        },
+        "65": {
+            "name": "星币王牌 Ace of Pentacles",
+            "upright": "新的财务或物质机会。",
+            "reversed": "机会错失、财务阻碍。"
+        },
+        "66": {
+            "name": "星币二 Two of Pentacles",
+            "upright": "平衡、灵活、适应变化。",
+            "reversed": "失衡、混乱、无法应对。"
+        },
+        "67": {
+            "name": "星币三 Three of Pentacles",
+            "upright": "合作、技能、团队努力。",
+            "reversed": "缺乏合作、分工不当。"
+        },
+        "68": {
+            "name": "星币四 Four of Pentacles",
+            "upright": "稳定、节制、财务安全。",
+            "reversed": "吝啬、固执、失去机会。"
+        },
+        "69": {
+            "name": "星币五 Five of Pentacles",
+            "upright": "困难、损失、缺乏支持。",
+            "reversed": "恢复、援助、改善状况。"
+        },
+        "70": {
+            "name": "星币六 Six of Pentacles",
+            "upright": "分享、平衡、给予与接受。",
+            "reversed": "不平等、索取、滥用权力。"
+        },
+        "71": {
+            "name": "星币七 Seven of Pentacles",
+            "upright": "耐心、长期计划、评估。",
+            "reversed": "急躁、短视、缺乏耐心。"
+        },
+        "72": {
+            "name": "星币八 Eight of Pentacles",
+            "upright": "努力、技能、学习成长。",
+            "reversed": "偷懒、缺乏进步、粗心。"
+        },
+        "73": {
+            "name": "星币九 Nine of Pentacles",
+            "upright": "独立、成就、财富享受。",
+            "reversed": "依赖、失败、失落。"
+        },
+        "74": {
+            "name": "星币十 Ten of Pentacles",
+            "upright": "家族、财富传承、稳定。",
+            "reversed": "家庭冲突、财务问题。"
+        },
+        "75": {
+            "name": "星币侍者 Page of Pentacles",
+            "upright": "新机会、学习、好奇心。",
+            "reversed": "拖延、轻率、机会流失。"
+        },
+        "76": {
+            "name": "星币骑士 Knight of Pentacles",
+            "upright": "踏实、稳重、努力。",
+            "reversed": "固执、慢、缺乏进取心。"
+        },
+        "77": {
+            "name": "星币皇后 Queen of Pentacles",
+            "upright": "照顾、实际、财务智慧。",
+            "reversed": "忽略责任、挥霍、过度焦虑。"
+        },
+        "78": {
+            "name": "星币国王 King of Pentacles",
+            "upright": "稳定、财富、领导力。",
+            "reversed": "贪婪、保守、固执。"
+        }
+    },
+    "美食": {
+        "1": {
+            "name": "北京烤鸭 Peking Duck"
+        },
+        "2": {
+            "name": "寿司 Sushi"
+        },
+        "3": {
+            "name": "玛格丽特披萨 Margherita Pizza"
+        },
+        "4": {
+            "name": "法式蜗牛 Escargot"
+        },
+        "5": {
+            "name": "泰式绿咖喱 Thai Green Curry"
+        },
+        "6": {
+            "name": "日式甜咖喱 Japanese Sweet Curry"
+        },
+        "7": {
+            "name": "北海道汤咖喱 Hokkaido Curry Soup"
+        },
+        "8": {
+            "name": "墨西哥玉米卷 Mexican Taco"
+        },
+        "9": {
+            "name": "印度黄油鸡 Butter Chicken"
+        },
+        "10": {
+            "name": "罗宋汤 Borscht"
+        },
+        "11": {
+            "name": "土耳其烤肉 Turkish Kebab"
+        },
+        "12": {
+            "name": "西班牙海鲜饭 Paella"
+        },
+        "13": {
+            "name": "德国酸菜猪肘 Sauerkraut Pork Knuckle"
+        },
+        "14": {
+            "name": "越南河粉 Pho"
+        },
+        "15": {
+            "name": "韩式泡菜炒饭 Kimchi Fried Rice"
+        },
+        "16": {
+            "name": "阿根廷烤肉 Argentine Asado"
+        },
+        "17": {
+            "name": "法老面包 Fougasse"
+        },
+        "18": {
+            "name": "希腊羊肉卷 Gyro"
+        },
+        "19": {
+            "name": "蛋挞 Egg Tart"
+        },
+        "20": {
+            "name": "辣椒螃蟹 Chili Crab"
+        },
+        "21": {
+            "name": "越南春卷 Vietnamese Spring Roll"
+        },
+        "22": {
+            "name": "巴西木薯饼 Brazilian Cassava Cake"
+        },
+        "23": {
+            "name": "马萨拉 Masala"
+        },
+        "24": {
+            "name": "塔吉锅 Tagine"
+        },
+        "25": {
+            "name": "牧羊人派 Shepherd's Pie"
+        },
+        "26": {
+            "name": "提拉米苏 Tiramisu"
+        },
+        "27": {
+            "name": "拉面 Ramen"
+        },
+        "28": {
+            "name": "阿斗波 Adobo"
+        },
+        "29": {
+            "name": "石锅拌饭 Bibimbap"
+        },
+        "30": {
+            "name": "芝士火锅 Cheese Fondue"
+        },
+        "31": {
+            "name": "法式洋葱汤 French Onion Soup"
+        },
+        "32": {
+            "name": "千层面 Lasagna"
+        },
+        "33": {
+            "name": "冬阴功汤 Tom Yum Soup"
+        },
+        "34": {
+            "name": "墨西哥辣椒酱炖牛肉 Chili Con Carne"
+        },
+        "35": {
+            "name": "鳗鱼饭 Unagi Don"
+        },
+        "36": {
+            "name": "土耳其烤羊肉 Şiş Kebap"
+        },
+        "37": {
+            "name": "南印度咖喱饭 South Indian Curry Rice"
+        },
+        "38": {
+            "name": "芝士汉堡 Cheeseburger"
+        },
+        "39": {
+            "name": "海鲜意面 Seafood Pasta"
+        },
+        "40": {
+            "name": "芒果糯米饭 Mango Sticky Rice"
+        },
+        "41": {
+            "name": "马卡龙 Macaron"
+        },
+        "42": {
+            "name": "油条巧克力 Churros with Chocolate"
+        },
+        "43": {
+            "name": "黑森林蛋糕 Black Forest Cake"
+        },
+        "44": {
+            "name": "苹果派 Apple Pie"
+        },
+        "45": {
+            "name": "瑞典肉丸 Köttbullar"
+        },
+        "46": {
+            "name": "咖啡冰沙 Coffee Frappe"
+        },
+        "47": {
+            "name": "巴西豆焖饭 Brazilian Feijoada Rice"
+        },
+        "48": {
+            "name": "蔬菜咖喱 Vegetable Curry"
+        },
+        "49": {
+            "name": "摩洛哥薄荷茶 Maghrebi Mint Tea"
+        },
+        "50": {
+            "name": "希腊酸奶蜂蜜 Greek Yogurt with Honey"
+        },
+        "51": {
+            "name": "麻婆豆腐 Mapo Tofu"
+        },
+        "52": {
+            "name": "宫保鸡丁 Kung Pao Chicken"
+        },
+        "53": {
+            "name": "水煮鱼 Sichuan Boiled Fish"
+        },
+        "54": {
+            "name": "红烧狮子头 Braised Lion’s Head Meatball"
+        },
+        "55": {
+            "name": "东坡肉 Dongpo Pork"
+        },
+        "56": {
+            "name": "小笼包 Soup Dumpling"
+        },
+        "57": {
+            "name": "锅包肉 Guo Bao Rou"
+        },
+        "58": {
+            "name": "扬州炒饭 Yangzhou Fried Rice"
+        },
+        "59": {
+            "name": "鱼香肉丝 Yu Xiang Shredded Pork"
+        },
+        "60": {
+            "name": "香菇鸡汤 Mushroom Chicken Soup"
+        },
+        "61": {
+            "name": "葱油饼 Scallion Pancake"
+        },
+        "62": {
+            "name": "油焖大虾 Braised Prawns in Oil"
+        },
+        "63": {
+            "name": "回锅肉 Twice-Cooked Pork"
+        },
+        "64": {
+            "name": "清蒸桂鱼 Steamed Mandarin Fish"
+        },
+        "65": {
+            "name": "酸菜鱼 Fish with Pickled Cabbage"
+        },
+        "66": {
+            "name": "干锅鸡翅 Dry Pot Chicken Wings"
+        },
+        "67": {
+            "name": "东江盐焗鸡 Dongjiang Salt-Baked Chicken"
+        },
+        "68": {
+            "name": "螺蛳粉 Luosifen"
+        },
+        "69": {
+            "name": "重庆火锅 Chongqing Hot Pot"
+        },
+        "70": {
+            "name": "梅菜扣肉 Braised Pork with Preserved Vegetables"
+        },
+        "71": {
+            "name": "马伦哥炖鸡 Chicken Marengo"
+        },
+        "72": {
+            "name": "布列塔尼海鲜浓汤 Breton Seafood Chowder"
+        },
+        "73": {
+            "name": "洋葱圈 Onion Rings"
+        },
+        "74": {
+            "name": "红酒炖牛肉 Beef Bourguignon"
+        },
+        "75": {
+            "name": "鹅肝酱 Foie Gras"
+        },
+        "76": {
+            "name": "法式煎鸭胸 Magret de Canard"
+        },
+        "77": {
+            "name": "马赛鱼汤 Bouillabaisse"
+        },
+        "78": {
+            "name": "尼斯沙拉 Niçoise Salad"
+        },
+        "79": {
+            "name": "可丽饼 Crêpe"
+        },
+        "80": {
+            "name": "抹茶巴菲 Matcha Parfait"
+        },
+        "81": {
+            "name": "匈牙利辣椒炖牛肉 Hungarian Goulash"
+        },
+        "82": {
+            "name": "波兰饺子 Pierogi"
+        },
+        "83": {
+            "name": "捷克烤猪膝 Czech Roast Pork Knuckle"
+        },
+        "84": {
+            "name": "英杰拉 Injera"
+        },
+        "85": {
+            "name": "印度炸脆球 Panipuri"
+        },
+        "86": {
+            "name": "丹麦开放式三明治 Smørrebrød"
+        },
+        "87": {
+            "name": "炖驯鹿肉 Stewed Reindeer"
+        },
+        "88": {
+            "name": "挪威腌三文鱼 Norwegian Gravlax"
+        },
+        "89": {
+            "name": "爱沙尼亚黑面包配奶酪 Estonian Black Bread with Cheese"
+        },
+        "90": {
+            "name": "立陶宛冷汤 Shaltibarshai"
+        },
+        "91": {
+            "name": "斯洛伐克奶酪面团球 koľačok"
+        },
+        "92": {
+            "name": "熏鱼拼盘 Smoked Fish Platter"
+        },
+        "93": {
+            "name": "蜂蜜蛋糕 Honey Cake"
+        },
+        "94": {
+            "name": "冰岛羊肉汤 Kjötsupa"
+        },
+        "95": {
+            "name": "奶油炖鱼 Creamed Fish"
+        },
+        "96": {
+            "name": "阿榜糕 Apom"
+        },
+        "97": {
+            "name": "法棍 Baguette"
+        },
+        "98": {
+            "name": "布里欧 Brioche"
+        },
+        "99": {
+            "name": "茶泡饭 Chazuke"
+        },
+        "100": {
+            "name": "炒青菜 Stir-Fried Vegetables"
+        },
+        "101": {
+            "name": "鳗鱼饭 Unagi Don"
+        },
+        "102": {
+            "name": "玉子烧 Tamagoyaki"
+        },
+        "103": {
+            "name": "无酵饼 Unleavened Bread"
+        }
+    },
+    "饮料": {
+        "1": {
+            "name": "可口可乐 Coca-Cola"
+        },
+        "2": {
+            "name": "百事可乐 Pepsi"
+        },
+        "3": {
+            "name": "雪碧 Sprite"
+        },
+        "4": {
+            "name": "芬达橙味 Fanta Orange"
+        },
+        "5": {
+            "name": "七喜 7 Up"
+        },
+        "6": {
+            "name": "红牛 Red Bull"
+        },
+        "7": {
+            "name": "Monster 能量饮料 Monster Energy"
+        },
+        "8": {
+            "name": "脉动 Pocari Sweat"
+        },
+        "9": {
+            "name": "维他柠檬茶 Vita Lemon Tea"
+        },
+        "10": {
+            "name": "冰红茶 Ice Tea"
+        },
+        "11": {
+            "name": "雀巢咖啡 Nescafé"
+        },
+        "12": {
+            "name": "手冲咖啡 Pour-Over"
+        },
+        "13": {
+            "name": "星巴克拿铁 Starbucks Latte"
+        },
+        "14": {
+            "name": "摩卡咖啡 Mocha Coffee"
+        },
+        "15": {
+            "name": "卡布奇诺 Cappuccino"
+        },
+        "16": {
+            "name": "抹茶拿铁 Matcha Latte"
+        },
+        "17": {
+            "name": "热巧克力 Hot Chocolate"
+        },
+        "18": {
+            "name": "可可饮料 Cocoa Drink"
+        },
+        "19": {
+            "name": "牛奶 Milk"
+        },
+        "20": {
+            "name": "酸奶 Yogurt"
+        },
+        "21": {
+            "name": "豆奶 Soy Milk"
+        },
+        "22": {
+            "name": "椰子水 Coconut Water"
+        },
+        "23": {
+            "name": "橙汁 Orange Juice"
+        },
+        "24": {
+            "name": "苹果汁 Apple Juice"
+        },
+        "25": {
+            "name": "葡萄汁 Grape Juice"
+        },
+        "26": {
+            "name": "水，白开水：别喝你那破饮料了，喝水去吧！ Water"
+        },
+        "27": {
+            "name": "菠萝汁 Pineapple Juice"
+        },
+        "28": {
+            "name": "胡萝卜汁 Carrot Juice"
+        },
+        "29": {
+            "name": "番茄汁 Tomato Juice"
+        },
+        "30": {
+            "name": "混合果蔬汁 Mixed Fruit and Vegetable Juice"
+        },
+        "31": {
+            "name": "拉茶 Teh Tarik"
+        },
+        "32": {
+            "name": "马黛茶 Mate Tea"
+        },
+        "33": {
+            "name": "阿萨伊果汁 Açaí Juice"
+        },
+        "34": {
+            "name": "拉格啤酒 Lager"
+        },
+        "35": {
+            "name": "康普茶 Kombucha"
+        },
+        "36": {
+            "name": "法国香槟 Champagne"
+        },
+        "37": {
+            "name": "莫吉托 Mojito"
+        },
+        "38": {
+            "name": "桑格利亚 Sangria"
+        },
+        "39": {
+            "name": "蜂蜜酒 Mead"
+        },
+        "40": {
+            "name": "日式梅酒 Umeshu"
+        },
+        "41": {
+            "name": "青柠苏打 Lime Soda"
+        },
+        "42": {
+            "name": "姜汁汽水 Ginger Ale"
+        },
+        "43": {
+            "name": "柚子茶 Yuzu Tea"
+        },
+        "44": {
+            "name": "冰咖啡 Iced Coffee"
+        },
+        "45": {
+            "name": "冷泡茶 Cold Brew Tea"
+        },
+        "46": {
+            "name": "奶茶 Milk Tea"
+        },
+        "47": {
+            "name": "红茶拿铁 Black Tea Latte"
+        },
+        "48": {
+            "name": "燕麦奶 Oat Milk"
+        },
+        "49": {
+            "name": "杏仁奶 Almond Milk"
+        },
+        "50": {
+            "name": "黑咖啡 Black Coffee"
+        },
+        "51": {
+            "name": "艾比啤酒 Abbey"
+        },
+        "52": {
+            "name": "波特啤酒 Porter"
+        },
+        "53": {
+            "name": "艾尔啤酒 Ale"
+        },
+        "54": {
+            "name": "蛋奶酒 Eggnog"
+        },
+        "55": {
+            "name": "格瓦斯 Kvass"
+        },
+        "56": {
+            "name": "柠檬水 Lemonade"
+        },
+        "57": {
+            "name": "简并态物质 Degenerate Matter"
+        }
+    }
+}

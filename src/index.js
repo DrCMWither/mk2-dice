@@ -65,10 +65,12 @@ export default {
         let reply = null;
 
         const commands = {
+            deck:  async () => handleDeck     (env, message, userId, chatId,            userName),
+            draw:  async () => handleDraw     (env, message, userId, chatId,            userName),
             jrrp:  async () => jrrp           (env,          userId, chatId,            userName),
             li:    async () => handleLi       (env                                              ),
             nn:    async () => handleName     (env, message, userId, chatId, chatTitle, userName),
-            roll:  async () => handleRoll     (env, message, userId, chatId,            userName),
+            roll:  async () => handleRoll     (env, message, userId, chatId, false,     userName),
             r:     async () => handleRoll     (env, message, userId, chatId, false,     userName),
             rq:    async () => handleRoll     (env, message, userId, chatId, true,      userName),
             ra:    async () => handleRa       (env, message, userId, chatId,            userName),

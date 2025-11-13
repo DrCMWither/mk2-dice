@@ -40,3 +40,17 @@ export async function handleMessage(chatId, payload, options = {}) {
         body: JSON.stringify(body)
     });
 }
+
+export async function isAdmin(userId, chatId) {
+    try {
+        const resp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getChatAdministrators?chat_id=${chatId}`);
+        const data = await resp.json();
+
+        if (!data.ok) return false;
+        const admins = data.result.map(a => a.user.id);
+        return admins.includes(userId);
+    } catch (e) {
+        console.error("[ERROR] Telegram admin check failed:", e);
+        return false;
+    }
+}

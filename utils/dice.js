@@ -49,3 +49,22 @@ export function parseDiceExpression(expr) {
 
     return { count, sides, multiplier, modifier, repeat: 1 };
 }
+
+/**
+ * Fetches quantum random numbers from the ANU Quantum Random Number Generator API.
+ *
+ * @param {number} totalCount - The total number of random numbers to generate (max 1000 per request).
+ * @param {number} sides - The number of sides for the dice (determines the range [1, sides]).
+ * @returns {number[]} An array of `totalCount` random integers, each in the range [1, sides].
+ * @throws {Error} If the API request fails or returns invalid data.
+ *
+ * @example
+ * // Get 5 dice rolls for a 6-sided die
+ * const rolls = await getQuantumRandomNumbers(5, 6);
+ * // Returns: [3, 1, 5, 2, 6] (example output)
+ */
+export async function getQuantumRandomNumbers(totalCount, sides) {
+    const response = await fetch(`https://qrng.anu.edu.au/API/jsonI.php?length=${totalCount}&type=uint8&size=${sides}`);
+    const data = await response.json();
+    return data.data.slice(0, totalCount).map(num => (num % sides) + 1);
+}
