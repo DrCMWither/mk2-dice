@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: commands/getst.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: commands/getst.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { getAttributes, getAllAttributes } from "../utils/storage.js";
+import { escapeHtml } from "../utils/utils.js";
+
+/**
+ * Handles the retrieval of user attributes in a chat context.
+ *
+ * Depending on the message content, this function can fetch:
+ * 1. Attributes for the current chat.
+ * 2. Attributes across all chats (if "all" is specified).
+ *
+ * It also attempts to fetch a stored user display name.
+ * All output values are HTML-escaped to prevent injection issues.
+ *
+ * @param {Object} env - The environment/context object for storage operations.
+ * @param {string} message - The command message, e.g., "/getst" or "/getst all".
+ * @param {string} userId - The unique identifier of the user requesting attributes.
+ * @param {string} chatId - The unique identifier of the current chat.
+ * @param {string} chatTitle - The title of the current chat, used for display purposes.
+ * @param {string} [userName] - Optional display name of the user; can be overridden by stored name.
+ * @returns {Promise&lt;string>} - A formatted string containing the user's attributes, or an error message if retrieval fails.
+ *
+ * @example
+ * // Retrieve attributes in the current chat
+ * await handleGetst(env, "/getst", "123", "456", "Test Chat", "Alice");
+ *
+ * @example
+ * // Retrieve attributes in all chats
+ * await handleGetst(env, "/getst all", "123", "456", "Test Chat", "Alice");
+ */
+export async function handleGetst(env, message, userId, chatId, chatTitle, userName) {
+    // Parameters check
+    if (!env || !userId || !chatId) {
+        return "无法获取用户或群信息。";
+    }
+
+    const parts = (message || "").trim().split(/\s+/);
+
+    try {
+        // Try to get storaged surname
+        const storedName = await getAttributes(env, userId, chatId, true);
+        if (storedName &amp;&amp; typeof storedName === "string") {
+            userName = storedName;
+        }
+
+        // /getst all
+        if (parts.length > 1 &amp;&amp; parts[1] === "all") {
+            const allAttrs = await getAllAttributes(env, userId);
+            if (!allAttrs || Object.keys(allAttrs).length === 0) {
+                return "您在所有群都没有设置任何属性。";
+            }
+
+            let text = `${escapeHtml(userName)} 在所有群的属性：\n`;
+            for (let [title, attrs] of Object.entries(allAttrs)) {
+                text += `\n群 ${escapeHtml(title || "未知")}:\n`;
+                if (attrs &amp;&amp; typeof attrs === "object") {
+                    for (let [k, v] of Object.entries(attrs)) {
+                        text += `- ${k}: ${v}\n`;
+                    }
+                }
+            }
+            return escapeHtml(text.trim());
+        }
+
+        // Default: current group
+        const attrs = await getAttributes(env, userId, chatId);
+        if (!attrs || Object.keys(attrs).length === 0) {
+            return `您在群 ${chatTitle || chatId} 没有设置任何属性。`;
+        }
+
+        let text = `${escapeHtml(userName)} 在当前群的属性：\n`;
+        for (let [k, v] of Object.entries(attrs)) {
+            text += `- ${k}: ${v}\n`;
+        }
+        return escapeHtml(text.trim());
+    } catch (err) {
+        console.error("[ERROR] handleGetst failed:", err);
+        return "获取属性时发生错误，请稍后再试。";
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#bestDiscard">bestDiscard</a></li><li><a href="global.html#clearAllAttributes">clearAllAttributes</a></li><li><a href="global.html#clearAttributes">clearAttributes</a></li><li><a href="global.html#computeWeights">computeWeights</a></li><li><a href="global.html#countMentsu">countMentsu</a></li><li><a href="global.html#countTiles">countTiles</a></li><li><a href="global.html#deleteAttribute">deleteAttribute</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#escapeHtml">escapeHtml</a></li><li><a href="global.html#gammaSample">gammaSample</a></li><li><a href="global.html#gaussian">gaussian</a></li><li><a href="global.html#generateAdvancedProblem">generateAdvancedProblem</a></li><li><a href="global.html#generateDora">generateDora</a></li><li><a href="global.html#generateProblem">generateProblem</a></li><li><a href="global.html#getAllAttributes">getAllAttributes</a></li><li><a href="global.html#getAttributes">getAttributes</a></li><li><a href="global.html#getInsanity">getInsanity</a></li><li><a href="global.html#getQuantumRandomNumbers">getQuantumRandomNumbers</a></li><li><a href="global.html#getSynonyms">getSynonyms</a></li><li><a href="global.html#handToUnicode">handToUnicode</a></li><li><a href="global.html#handleDraw">handleDraw</a></li><li><a href="global.html#handleGetst">handleGetst</a></li><li><a href="global.html#handleInsanity">handleInsanity</a></li><li><a href="global.html#handleLi">handleLi</a></li><li><a href="global.html#handleMessage">handleMessage</a></li><li><a href="global.html#handleName">handleName</a></li><li><a href="global.html#handleNnkr">handleNnkr</a></li><li><a href="global.html#handleRa">handleRa</a></li><li><a href="global.html#handleRoll">handleRoll</a></li><li><a href="global.html#handleSc">handleSc</a></li><li><a href="global.html#handleSt">handleSt</a></li><li><a href="global.html#handleSynonyms">handleSynonyms</a></li><li><a href="global.html#handleTi">handleTi</a></li><li><a href="global.html#improvementCount">improvementCount</a></li><li><a href="global.html#jrrp">jrrp</a></li><li><a href="global.html#nextTile">nextTile</a></li><li><a href="global.html#normalizeKey">normalizeKey</a></li><li><a href="global.html#parseDiceExpression">parseDiceExpression</a></li><li><a href="global.html#randomHand">randomHand</a></li><li><a href="global.html#randomTile">randomTile</a></li><li><a href="global.html#rollDice">rollDice</a></li><li><a href="global.html#setAttribute">setAttribute</a></li><li><a href="global.html#shantenNormal">shantenNormal</a></li><li><a href="global.html#shuffle">shuffle</a></li><li><a href="global.html#sortHand">sortHand</a></li><li><a href="global.html#splitAttributes">splitAttributes</a></li><li><a href="global.html#tileToUnicode">tileToUnicode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Nov 13 2025 21:20:12 GMT+0800 (China Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

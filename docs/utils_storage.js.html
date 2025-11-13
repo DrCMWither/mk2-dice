@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: utils/storage.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: utils/storage.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Sets a user attribute or nickname in a specific chat group.
+ *
+ * @param {Object} env - The environment/context object containing KV storage.
+ * @param {string} userId - The unique identifier of the user.
+ * @param {string} chatId - The unique identifier of the chat group.
+ * @param {string|null} key - The attribute key to set. Ignored if `isName` is true.
+ * @param {any} value - The value to set for the attribute or nickname.
+ * @param {boolean} [isName=false] - If true, sets the user's nickname instead of a general attribute.
+ * @returns {Promise&lt;void>}
+ */
+export async function setAttribute(env, userId, chatId, key, value, isName = false) {
+    const groupKey = `group:${chatId}`;
+    const groupData = (await env.KV.get(groupKey, "json")) || {};
+    const userData = groupData[userId] || {};
+
+    if (isName) {
+        userData["name"] = value; // override @string
+    } else {
+        userData[key] = value;
+    }
+
+    groupData[userId] = userData;
+    await env.KV.put(groupKey, JSON.stringify(groupData));
+}
+
+/**
+ * Deletes a specific user attribute or nickname in a chat group.
+ *
+ * @param {Object} env - The environment/context object containing KV storage.
+ * @param {string} userId - The unique identifier of the user.
+ * @param {string} chatId - The unique identifier of the chat group.
+ * @param {string} key - The attribute key to delete. Ignored if `isName` is true.
+ * @param {boolean} [isName=false] - If true, deletes the user's nickname instead of a general attribute.
+ * @returns {Promise&lt;boolean>} - True if the deletion was successful, false otherwise.
+ */
+export async function deleteAttribute(env, userId, chatId, key, isName = false) {
+    const groupKey = `group:${chatId}`;
+    const groupData = (await env.KV.get(groupKey, "json")) || {};
+    const userData = groupData[userId];
+    if (!userData) return false;
+
+    if (isName) {
+        if (!("name" in userData)) return false;
+        delete userData["name"];
+    } else {
+        if (!(key in userData)) return false;
+        delete userData[key];
+    }
+
+    groupData[userId] = userData;
+    await env.KV.put(groupKey, JSON.stringify(groupData));
+    return true;
+}
+
+
+/**
+ * Clears all attributes or the nickname for a user in a specific chat group.
+ *
+ * @param {Object} env - The environment/context object containing KV storage.
+ * @param {string} userId - The unique identifier of the user.
+ * @param {string} chatId - The unique identifier of the chat group.
+ * @param {boolean} [isName=false] - If true, clears only the user's nickname.
+ * @returns {Promise&lt;boolean>} - True if something was cleared, false if nothing to clear.
+ */
+export async function clearAttributes(env, userId, chatId, isName = false) {
+    const groupKey = `group:${chatId}`;
+    const groupData = (await env.KV.get(groupKey, "json")) || {};
+    if (!groupData[userId]) return false;
+
+    if (isName) {
+        if (!("name" in groupData[userId])) return false;
+        delete groupData[userId]["name"];
+    } else {
+        delete groupData[userId];
+    }
+
+    await env.KV.put(groupKey, JSON.stringify(groupData));
+    return true;
+}
+
+/**
+ * Clears all attributes or nicknames for a user across all chat groups.
+ *
+ * @param {Object} env - The environment/context object containing KV storage.
+ * @param {string} userId - The unique identifier of the user.
+ * @param {boolean} [isName=false] - If true, clears only the user's nickname.
+ * @returns {Promise&lt;number>} - The number of groups where attributes/nickname were cleared.
+ */
+export async function clearAllAttributes(env, userId, isName = false) {
+    const list = await env.KV.list({ prefix: "group:" });
+    let cleared = 0;
+    for (const item of list.keys) {
+        const groupData = (await env.KV.get(item.name, "json")) || {};
+        if (!groupData[userId]) continue;
+
+        if (isName) {
+            if ("name" in groupData[userId]) {
+                delete groupData[userId]["name"];
+                await env.KV.put(item.name, JSON.stringify(groupData));
+                cleared++;
+            }
+        } else {
+            delete groupData[userId];
+            await env.KV.put(item.name, JSON.stringify(groupData));
+            cleared++;
+        }
+    }
+    return cleared;
+}
+
+
+/**
+ * Retrieves all attributes or the nickname for a user in a specific chat group.
+ *
+ * @param {Object} env - The environment/context object containing KV storage.
+ * @param {string} userId - The unique identifier of the user.
+ * @param {string} chatId - The unique identifier of the chat group.
+ * @param {boolean} [isName=false] - If true, returns only the nickname.
+ * @returns {Promise&lt;Object|string|null>} - Returns the attributes object, the nickname string, or null if not found.
+ */
+export async function getAttributes(env, userId, chatId, isName = false) {
+    const groupKey = `group:${chatId}`;
+    const groupData = (await env.KV.get(groupKey, "json")) || {};
+    if (!groupData[userId]) return isName ? null : {};
+
+    if (isName) {
+        return groupData[userId]["name"] || null;
+    } else {
+        const { name, ...rest } = groupData[userId];
+        return rest;
+    }
+}
+
+/**
+ * Retrieves all attributes or nicknames for a user across all chat groups.
+ *
+ * @param {Object} env - The environment/context object containing KV storage.
+ * @param {string} userId - The unique identifier of the user.
+ * @param {boolean} [isName=false] - If true, returns only nicknames.
+ * @returns {Promise&lt;Object>} - An object mapping chat IDs to attributes or nicknames.
+ */
+export async function getAllAttributes(env, userId, isName = false) {
+    const list = await env.KV.list({ prefix: "group:" });
+    const result = {};
+    for (const item of list.keys) {
+        const groupData = (await env.KV.get(item.name, "json")) || {};
+        if (!groupData[userId]) continue;
+
+        const chatId = item.name.replace("group:", "");
+        if (isName) {
+            if ("name" in groupData[userId]) {
+                result[chatId] = groupData[userId]["name"];
+            }
+        } else {
+            const { name, ...rest } = groupData[userId];
+            if (Object.keys(rest).length > 0) {
+                result[chatId] = rest;
+            }
+        }
+    }
+    return result;
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#bestDiscard">bestDiscard</a></li><li><a href="global.html#clearAllAttributes">clearAllAttributes</a></li><li><a href="global.html#clearAttributes">clearAttributes</a></li><li><a href="global.html#computeWeights">computeWeights</a></li><li><a href="global.html#countMentsu">countMentsu</a></li><li><a href="global.html#countTiles">countTiles</a></li><li><a href="global.html#deleteAttribute">deleteAttribute</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#escapeHtml">escapeHtml</a></li><li><a href="global.html#gammaSample">gammaSample</a></li><li><a href="global.html#gaussian">gaussian</a></li><li><a href="global.html#generateAdvancedProblem">generateAdvancedProblem</a></li><li><a href="global.html#generateDora">generateDora</a></li><li><a href="global.html#generateProblem">generateProblem</a></li><li><a href="global.html#getAllAttributes">getAllAttributes</a></li><li><a href="global.html#getAttributes">getAttributes</a></li><li><a href="global.html#getInsanity">getInsanity</a></li><li><a href="global.html#getQuantumRandomNumbers">getQuantumRandomNumbers</a></li><li><a href="global.html#getSynonyms">getSynonyms</a></li><li><a href="global.html#handToUnicode">handToUnicode</a></li><li><a href="global.html#handleDraw">handleDraw</a></li><li><a href="global.html#handleGetst">handleGetst</a></li><li><a href="global.html#handleInsanity">handleInsanity</a></li><li><a href="global.html#handleLi">handleLi</a></li><li><a href="global.html#handleMessage">handleMessage</a></li><li><a href="global.html#handleName">handleName</a></li><li><a href="global.html#handleNnkr">handleNnkr</a></li><li><a href="global.html#handleRa">handleRa</a></li><li><a href="global.html#handleRoll">handleRoll</a></li><li><a href="global.html#handleSc">handleSc</a></li><li><a href="global.html#handleSt">handleSt</a></li><li><a href="global.html#handleSynonyms">handleSynonyms</a></li><li><a href="global.html#handleTi">handleTi</a></li><li><a href="global.html#improvementCount">improvementCount</a></li><li><a href="global.html#jrrp">jrrp</a></li><li><a href="global.html#nextTile">nextTile</a></li><li><a href="global.html#normalizeKey">normalizeKey</a></li><li><a href="global.html#parseDiceExpression">parseDiceExpression</a></li><li><a href="global.html#randomHand">randomHand</a></li><li><a href="global.html#randomTile">randomTile</a></li><li><a href="global.html#rollDice">rollDice</a></li><li><a href="global.html#setAttribute">setAttribute</a></li><li><a href="global.html#shantenNormal">shantenNormal</a></li><li><a href="global.html#shuffle">shuffle</a></li><li><a href="global.html#sortHand">sortHand</a></li><li><a href="global.html#splitAttributes">splitAttributes</a></li><li><a href="global.html#tileToUnicode">tileToUnicode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Nov 13 2025 21:20:12 GMT+0800 (China Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

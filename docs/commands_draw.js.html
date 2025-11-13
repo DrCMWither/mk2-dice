@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: commands/draw.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: commands/draw.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { rollDice } from "../utils/dice.js";
+import { getAttributes } from "../utils/storage.js";
+import { normalizeKey } from "../utils/utils.js";
+
+/**
+ * Handles the card draw command (e.g., `/draw [deck]`). Retrieves a random card from the specified deck.
+ *
+ * @async
+ * @param {Object} env - Environment object containing bindings (e.g., KV storage)
+ * @param {string} message - Full message string (e.g., "/draw 塔罗")
+ * @param {string} userId - User identifier for storage lookups
+ * @param {string} chatId - Chat identifier for storage lookups
+ * @param {string} userName - Current username (may be overridden by stored name)
+ * @returns {Promise&lt;string>} Formatted result string with card details or error message
+ *
+ * @example
+ * // Example usage:
+ * // User sends: "/draw 塔罗"
+ * // Returns: "Alice 抽取了 塔罗：\n\n🎴 The Magician\n正位：You have the power to manifest your desires"
+ *
+ * @throws {Error} - If deck data is missing, invalid, or JSON parsing fails
+ *
+ **/
+export async function handleDraw(env, message, userId, chatId, userName) {
+    const parts = message.trim().split(/\s+/);
+    let deckKind = await normalizeKey(env, parts[1]) || "塔罗";
+    if (!deckKind) {
+        return "请指定要抽取的卡组，例如：`/draw 塔罗`。";
+    }
+
+    const storedName = await getAttributes(env, userId, chatId, true);
+    if (storedName) userName = storedName;
+
+    try {
+        const raw = await env.KV.get("drawDeck");
+        if (!raw) {
+            return "未找到任何卡组数据。";
+        }
+
+        let allDecks;
+        try {
+            allDecks = JSON.parse(raw);
+        } catch {
+            return "卡组数据格式错误（JSON 无法解析）。";
+        }
+
+        const deck = allDecks[deckKind];
+        if (!deck || typeof deck !== "object") {
+            return `未找到卡组 "${deckKind}"，请确认名称是否正确。`;
+        }
+
+        const keys = Object.keys(deck);
+        const size = keys.length;
+        if (size === 0) {
+            return `卡组 "${deckKind}" 为空。`;
+        }
+
+        const roll = rollDice(1, size);
+        const index = Number(roll[0]) || 1;
+        const card = deck[index] || deck[keys[index - 1]];
+        if (!card) {
+            return `抽取错误（索引 ${index}）。`;
+        }
+
+        let orientation = "";
+        let meaning = "";
+
+        if ("upright" in card || "reversed" in card) {
+            const orientationRoll = rollDice(1, 2);
+            const isReversed = Array.isArray(orientationRoll) &amp;&amp; orientationRoll[0] === 2;
+            orientation = isReversed ? "逆位：" : "正位：";
+            meaning = isReversed ? (card.reversed || "") : (card.upright || "");
+        } else {
+            meaning = card.text || "";
+        }
+        return `${userName} 抽取了 ${deckKind}：\n\n🎴 ${card.name}\n${orientation}${meaning}`;
+
+    } catch (e) {
+        console.error("[ERROR] handleDraw failed:", e);
+        return `抽取时发生错误，请稍后再试。`;
+    }
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#bestDiscard">bestDiscard</a></li><li><a href="global.html#clearAllAttributes">clearAllAttributes</a></li><li><a href="global.html#clearAttributes">clearAttributes</a></li><li><a href="global.html#computeWeights">computeWeights</a></li><li><a href="global.html#countMentsu">countMentsu</a></li><li><a href="global.html#countTiles">countTiles</a></li><li><a href="global.html#deleteAttribute">deleteAttribute</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#escapeHtml">escapeHtml</a></li><li><a href="global.html#gammaSample">gammaSample</a></li><li><a href="global.html#gaussian">gaussian</a></li><li><a href="global.html#generateAdvancedProblem">generateAdvancedProblem</a></li><li><a href="global.html#generateDora">generateDora</a></li><li><a href="global.html#generateProblem">generateProblem</a></li><li><a href="global.html#getAllAttributes">getAllAttributes</a></li><li><a href="global.html#getAttributes">getAttributes</a></li><li><a href="global.html#getInsanity">getInsanity</a></li><li><a href="global.html#getQuantumRandomNumbers">getQuantumRandomNumbers</a></li><li><a href="global.html#getSynonyms">getSynonyms</a></li><li><a href="global.html#handToUnicode">handToUnicode</a></li><li><a href="global.html#handleDraw">handleDraw</a></li><li><a href="global.html#handleGetst">handleGetst</a></li><li><a href="global.html#handleInsanity">handleInsanity</a></li><li><a href="global.html#handleLi">handleLi</a></li><li><a href="global.html#handleMessage">handleMessage</a></li><li><a href="global.html#handleName">handleName</a></li><li><a href="global.html#handleNnkr">handleNnkr</a></li><li><a href="global.html#handleRa">handleRa</a></li><li><a href="global.html#handleRoll">handleRoll</a></li><li><a href="global.html#handleSc">handleSc</a></li><li><a href="global.html#handleSt">handleSt</a></li><li><a href="global.html#handleSynonyms">handleSynonyms</a></li><li><a href="global.html#handleTi">handleTi</a></li><li><a href="global.html#improvementCount">improvementCount</a></li><li><a href="global.html#jrrp">jrrp</a></li><li><a href="global.html#nextTile">nextTile</a></li><li><a href="global.html#normalizeKey">normalizeKey</a></li><li><a href="global.html#parseDiceExpression">parseDiceExpression</a></li><li><a href="global.html#randomHand">randomHand</a></li><li><a href="global.html#randomTile">randomTile</a></li><li><a href="global.html#rollDice">rollDice</a></li><li><a href="global.html#setAttribute">setAttribute</a></li><li><a href="global.html#shantenNormal">shantenNormal</a></li><li><a href="global.html#shuffle">shuffle</a></li><li><a href="global.html#sortHand">sortHand</a></li><li><a href="global.html#splitAttributes">splitAttributes</a></li><li><a href="global.html#tileToUnicode">tileToUnicode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Nov 13 2025 21:20:12 GMT+0800 (China Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

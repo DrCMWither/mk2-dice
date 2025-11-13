@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: commands/roll.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: commands/roll.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { rollDice, parseDiceExpression, getQuantumRandomNumbers } from "../utils/dice.js";
+import { getAttributes } from "../utils/storage.js";
+import { escapeHtml } from "../utils/utils.js";
+
+/**
+ * Handles a dice roll command with advanced notation.
+ *
+ * Supports the following dice notation:
+ *   /r NdM[*X][\pm Y]
+ *   where:
+ *     - C# = number of times to repeat the roll (default 1)
+ *     - N = number of dice (default 1)
+ *     - M = number of sides per die (default 6)
+ *     - *X = multiplier (optional, default 1)
+ *     - \pm Y = modifier (optional, default 0)
+ *
+ * Examples of valid commands:
+ *   /r 3d6
+ *   /r 2d10*2+5
+ *   /r 3#d20*2 (repeats the d20 roll 3 times, multiplies the total by 2)
+ *
+ * @param {Object} env - The environment/context object for storage operations.
+ * @param {string} message - The command message, e.g., "/r 3d6*2+1".
+ * @param {string} userId - The unique identifier of the user issuing the roll.
+ * @param {string} chatId - The unique identifier of the chat where the command is issued.
+ * @param {string} userName - The display name of the user, can be overridden by stored nickname.
+ * @param {boolean} [isQuantum=false] - If true, uses the quantum random number generator (ANU API) for dice rolls.
+ * @returns {Promise&lt;string>} - A formatted string showing the detailed dice roll and total.
+ *
+ * @example
+ * await handleRoll(env, "/r 3d6", "123", "456", "Alice");
+ *
+ * @example
+ * await handleRoll(env, "/r 2d10*2+5", "123", "456", "Alice");
+ */
+export async function handleRoll(env, message, userId, chatId, isQuantum = false, userName) {
+    const match = message.match(/^\/(roll|r|rh|rq)(?:\s+(.*))?$/i);
+    if (!match) return "格式错误，请使用 /r [C#]NdM[*X][+Y]";
+
+    const expr = match[2] || "1d6";
+    const parsed = parseDiceExpression(expr);
+    if (!parsed) return "无法解析骰子表达式，请使用格式 [C#]NdM[*X][+Y]";
+
+    const { count, sides, multiplier, modifier, repeat = 1 } = parsed;
+
+    if (sides &lt; 1 &amp;&amp; count === 0) {
+        return `🎲 ${escapeHtml(userName)} 的结果: ${modifier}`;
+    }
+    if (sides &lt; 1) return "骰子的面数必须至少为 1!";
+
+    const storedName = await getAttributes(env, userId, chatId, true);
+    if (storedName) userName = storedName;
+
+    const results = [];
+    for (let i = 0; i &lt; repeat; i++) {
+        let rolls = [];
+
+        if (isQuantum) {
+            const totalCount = count * repeat;
+            const quantumRolls = await getQuantumRandomNumbers(totalCount, sides);
+            rolls = quantumRolls.slice(i * count, (i + 1) * count);
+        } else {
+            rolls = rollDice(count, sides);
+        }
+
+        const sum = rolls.reduce((a, b) => a + b, 0);
+        const total = sum * multiplier + modifier;
+
+        let diceNotation = `${count}d${sides}`;
+        if (multiplier !== 1) diceNotation += `*${multiplier}`;
+        if (modifier !== 0) diceNotation += (modifier > 0 ? "+" : "") + modifier;
+
+        let expanded = rolls.join(" + ");
+        if (multiplier !== 1) expanded = `(${expanded})*${multiplier}`;
+        if (modifier !== 0) expanded += ` (${modifier > 0 ? "+" : ""}${modifier})`;
+
+        results.push({ diceNotation, expanded, total });
+    }
+
+    let output = `🎲 ${escapeHtml(userName)} 的投掷结果:\n`;
+    if (repeat > 1) {
+        results.forEach((r, i) => {
+            output += `#${i + 1}: ${r.diceNotation} = ${r.expanded} → 合计 ${r.total}\n`;
+        });
+        const grandTotal = results.reduce((a, b) => a + b.total, 0);
+        output += `——\n总和: ${grandTotal}`;
+    } else {
+        const r = results[0];
+        output += `${r.diceNotation} = ${r.expanded}\n合计: ${r.total}`;
+    }
+
+    if (isQuantum) {
+        output += "\n该结果获取自量子缝隙中洞开的启示。该启示一分钟最多只能获取一次。"
+    }
+
+    return output.trim();
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#bestDiscard">bestDiscard</a></li><li><a href="global.html#clearAllAttributes">clearAllAttributes</a></li><li><a href="global.html#clearAttributes">clearAttributes</a></li><li><a href="global.html#computeWeights">computeWeights</a></li><li><a href="global.html#countMentsu">countMentsu</a></li><li><a href="global.html#countTiles">countTiles</a></li><li><a href="global.html#deleteAttribute">deleteAttribute</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#escapeHtml">escapeHtml</a></li><li><a href="global.html#gammaSample">gammaSample</a></li><li><a href="global.html#gaussian">gaussian</a></li><li><a href="global.html#generateAdvancedProblem">generateAdvancedProblem</a></li><li><a href="global.html#generateDora">generateDora</a></li><li><a href="global.html#generateProblem">generateProblem</a></li><li><a href="global.html#getAllAttributes">getAllAttributes</a></li><li><a href="global.html#getAttributes">getAttributes</a></li><li><a href="global.html#getInsanity">getInsanity</a></li><li><a href="global.html#getQuantumRandomNumbers">getQuantumRandomNumbers</a></li><li><a href="global.html#getSynonyms">getSynonyms</a></li><li><a href="global.html#handToUnicode">handToUnicode</a></li><li><a href="global.html#handleDraw">handleDraw</a></li><li><a href="global.html#handleGetst">handleGetst</a></li><li><a href="global.html#handleInsanity">handleInsanity</a></li><li><a href="global.html#handleLi">handleLi</a></li><li><a href="global.html#handleMessage">handleMessage</a></li><li><a href="global.html#handleName">handleName</a></li><li><a href="global.html#handleNnkr">handleNnkr</a></li><li><a href="global.html#handleRa">handleRa</a></li><li><a href="global.html#handleRoll">handleRoll</a></li><li><a href="global.html#handleSc">handleSc</a></li><li><a href="global.html#handleSt">handleSt</a></li><li><a href="global.html#handleSynonyms">handleSynonyms</a></li><li><a href="global.html#handleTi">handleTi</a></li><li><a href="global.html#improvementCount">improvementCount</a></li><li><a href="global.html#jrrp">jrrp</a></li><li><a href="global.html#nextTile">nextTile</a></li><li><a href="global.html#normalizeKey">normalizeKey</a></li><li><a href="global.html#parseDiceExpression">parseDiceExpression</a></li><li><a href="global.html#randomHand">randomHand</a></li><li><a href="global.html#randomTile">randomTile</a></li><li><a href="global.html#rollDice">rollDice</a></li><li><a href="global.html#setAttribute">setAttribute</a></li><li><a href="global.html#shantenNormal">shantenNormal</a></li><li><a href="global.html#shuffle">shuffle</a></li><li><a href="global.html#sortHand">sortHand</a></li><li><a href="global.html#splitAttributes">splitAttributes</a></li><li><a href="global.html#tileToUnicode">tileToUnicode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Nov 13 2025 21:20:12 GMT+0800 (China Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

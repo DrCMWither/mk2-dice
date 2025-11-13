@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: commands/nn.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: commands/nn.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import {
+    setAttribute,
+    clearAttributes,
+    clearAllAttributes,
+} from "../utils/storage.js";
+
+import { normalizeKey, escapeHtml } from "../utils/utils.js";
+
+/**
+ * Handles user nickname commands in a chat.
+ *
+ * Supports the following subcommands:
+ * 1. Setting a nickname: `/nn &lt;nickname>`
+ * 2. Clearing the nickname in the current chat: `/nn clear`
+ * 3. Clearing nicknames in all chats: `/nn clearall`
+ *
+ * The function normalizes the nickname, stores it, and returns a confirmation message.
+ * All output values are HTML-escaped to prevent injection issues.
+ *
+ * @param {Object} env - The environment/context object for storage operations.
+ * @param {string} message - The command message, e.g., "/nn Alice" or "/nn clear".
+ * @param {string} userId - The unique identifier of the user issuing the command.
+ * @param {string} chatId - The unique identifier of the current chat.
+ * @param {string} chatTitle - The title of the current chat, used for display purposes.
+ * @param {string} userName - The display name of the user, used in messages.
+ * @returns {Promise&lt;string>} - A confirmation message describing the action taken.
+ *
+ * @example
+ * // Set a nickname
+ * await handleName(env, "/nn Alice", "123", "456", "Test Chat", "Bob");
+ *
+ * @example
+ * // Clear the nickname in the current chat
+ * await handleName(env, "/nn clear", "123", "456", "Test Chat", "Bob");
+ *
+ * @example
+ * // Clear nicknames in all chats
+ * await handleName(env, "/nn clearall", "123", "456", "Test Chat", "Bob");
+ */
+export async function handleName(env, message, userId, chatId, chatTitle, userName) {
+    const parts = message.trim().split(/\s+/);
+
+    if (parts.length &lt; 2) {
+        return "用法: /nn &lt;昵称> 或 /nn clear /nn clearall";
+    }
+
+    const cmd = parts[1].toLowerCase();
+
+    // /nn clear
+    if (cmd === "clear") {
+        await clearAttributes(env, userId, chatId, true);
+        return `已清除您在群 ${escapeHtml(chatTitle)} 的昵称。`;
+    }
+
+    // /nn clearall
+    if (cmd === "clearall") {
+        await clearAllAttributes(env, userId, true);
+        return "已清除您在所有群的昵称。";
+    }
+
+    const rawNickname = parts[1];
+    const key = await normalizeKey(env, rawNickname);
+
+    await setAttribute(env, userId, chatId, null, rawNickname, true);
+
+    return `已设置 ${escapeHtml(userName)} 在群 ${escapeHtml(chatTitle)} 的昵称「${escapeHtml(rawNickname)}${escapeHtml(rawNickname) !== key ? ` → ${key}` : ""}」`;
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#bestDiscard">bestDiscard</a></li><li><a href="global.html#clearAllAttributes">clearAllAttributes</a></li><li><a href="global.html#clearAttributes">clearAttributes</a></li><li><a href="global.html#computeWeights">computeWeights</a></li><li><a href="global.html#countMentsu">countMentsu</a></li><li><a href="global.html#countTiles">countTiles</a></li><li><a href="global.html#deleteAttribute">deleteAttribute</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#escapeHtml">escapeHtml</a></li><li><a href="global.html#gammaSample">gammaSample</a></li><li><a href="global.html#gaussian">gaussian</a></li><li><a href="global.html#generateAdvancedProblem">generateAdvancedProblem</a></li><li><a href="global.html#generateDora">generateDora</a></li><li><a href="global.html#generateProblem">generateProblem</a></li><li><a href="global.html#getAllAttributes">getAllAttributes</a></li><li><a href="global.html#getAttributes">getAttributes</a></li><li><a href="global.html#getInsanity">getInsanity</a></li><li><a href="global.html#getQuantumRandomNumbers">getQuantumRandomNumbers</a></li><li><a href="global.html#getSynonyms">getSynonyms</a></li><li><a href="global.html#handToUnicode">handToUnicode</a></li><li><a href="global.html#handleDraw">handleDraw</a></li><li><a href="global.html#handleGetst">handleGetst</a></li><li><a href="global.html#handleInsanity">handleInsanity</a></li><li><a href="global.html#handleLi">handleLi</a></li><li><a href="global.html#handleMessage">handleMessage</a></li><li><a href="global.html#handleName">handleName</a></li><li><a href="global.html#handleNnkr">handleNnkr</a></li><li><a href="global.html#handleRa">handleRa</a></li><li><a href="global.html#handleRoll">handleRoll</a></li><li><a href="global.html#handleSc">handleSc</a></li><li><a href="global.html#handleSt">handleSt</a></li><li><a href="global.html#handleSynonyms">handleSynonyms</a></li><li><a href="global.html#handleTi">handleTi</a></li><li><a href="global.html#improvementCount">improvementCount</a></li><li><a href="global.html#jrrp">jrrp</a></li><li><a href="global.html#nextTile">nextTile</a></li><li><a href="global.html#normalizeKey">normalizeKey</a></li><li><a href="global.html#parseDiceExpression">parseDiceExpression</a></li><li><a href="global.html#randomHand">randomHand</a></li><li><a href="global.html#randomTile">randomTile</a></li><li><a href="global.html#rollDice">rollDice</a></li><li><a href="global.html#setAttribute">setAttribute</a></li><li><a href="global.html#shantenNormal">shantenNormal</a></li><li><a href="global.html#shuffle">shuffle</a></li><li><a href="global.html#sortHand">sortHand</a></li><li><a href="global.html#splitAttributes">splitAttributes</a></li><li><a href="global.html#tileToUnicode">tileToUnicode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Nov 13 2025 21:20:12 GMT+0800 (China Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

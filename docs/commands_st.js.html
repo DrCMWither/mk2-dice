@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: commands/st.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: commands/st.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* import {
+          setAttribute,
+          deleteAttribute,
+          clearAttributes,
+          clearAllAttributes,
+                         } from "../utils/storage.js"; */
+import {  splitAttributes,
+          normalizeKey,
+          escapeHtml
+                         } from "../utils/utils.js";
+
+
+/**
+ * Handles setting, deleting, and clearing user attributes in a group.
+ *
+ * Supported commands:
+ * - "/st clear": Clear all attributes of the user in the current group.
+ * - "/st clearall": Clear all attributes of the user in all groups.
+ * - "/st del &lt;attribute>": Delete a specific attribute of the user in the current group.
+ * - "/st &lt;attr1> &lt;value1> &lt;attr2> &lt;value2> ...": Set one or multiple attributes (0-99) for the user in the current group.
+ *
+ * Attribute keys are normalized, and invalid values (non-numeric or out of 0-99) are ignored.
+ *
+ * @param {Object} env - The environment/context object, providing KV storage access.
+ * @param {string} message - The command message, e.g., "/st Strength 50 Luck 30".
+ * @param {string} userId - The unique identifier of the user performing the command.
+ * @param {string} chatId - The unique identifier of the chat/group.
+ * @param {string} chatTitle - The display title of the chat/group.
+ * @returns {Promise&lt;string>} - A response message describing the result of the operation.
+ *
+ * @example
+ * await handleSt(env, "/st Strength 50 Luck 30", "123", "456", "Adventurers");
+ *
+ * @example
+ * await handleSt(env, "/st clear", "123", "456", "Adventurers");
+ *
+ * @example
+ * await handleSt(env, "/st del Strength", "123", "456", "Adventurers");
+ */
+export async function handleSt(env, message, userId, chatId, chatTitle) {
+    message = splitAttributes(message);
+    const parts = message.trim().split(/\s+/);
+
+    const groupKey = `group:${chatId}`;
+    const groupData = (await env.KV.get(groupKey, "json")) || {};
+    const userData = groupData[userId] || {};
+
+    // clear
+    if (parts[1] === "clear") {
+        delete groupData[userId];
+        await env.KV.put(groupKey, JSON.stringify(groupData));
+        return `已清除您在群 ${chatTitle} 的属性。`;
+    }
+
+    // clearall
+    if (parts[1] === "clearall") {
+        const allKeys = await env.KV.list({ prefix: "group:" });
+        for (const { name } of allKeys.keys) {
+            const data = (await env.KV.get(name, "json")) || {};
+            delete data[userId];
+            await env.KV.put(name, JSON.stringify(data));
+        }
+        return "已清除您在所有群的属性。";
+    }
+
+    // del
+    if (parts[1] === "del") {
+        const attr = parts[2];
+        if (!attr) return "请输入要删除的属性名";
+        const key = await normalizeKey(env, attr);
+
+        if (userData[key] !== undefined) {
+            delete userData[key];
+            groupData[userId] = userData;
+            await env.KV.put(groupKey, JSON.stringify(groupData));
+            return `已删除您在群 ${escapeHtml(chatTitle)} 的属性「${escapeHtml(attr)}」。`;
+        } else {
+            return `没有找到属性「${escapeHtml(attr)}」。`;
+        }
+    }
+
+    // st
+    if (parts.length >= 3) {
+        let reply = "已设置属性：\n";
+        for (let i = 1; i &lt; parts.length; i += 2) {
+            const rawKey = parts[i];
+            const value = parts[i + 1];
+            if (!value) break;
+
+            const key = await normalizeKey(env, rawKey);
+            const num = Number(value);
+            if (isNaN(num) || num &lt; 0 || num > 99) {
+                reply += `- ${escapeHtml(rawKey)}${rawKey !== key ? `（→${key}）` : ""} 的值无效，必须是 0~99 的数字，忽略\n`;
+                continue;
+            }
+
+            userData[key] = num;
+            reply += `- ${escapeHtml(rawKey)}${rawKey !== key ? `（→${key}）` : ""} = ${num}\n`;
+        }
+
+        groupData[userId] = userData;
+        await env.KV.put(groupKey, JSON.stringify(groupData));
+        return reply.trim();
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#bestDiscard">bestDiscard</a></li><li><a href="global.html#clearAllAttributes">clearAllAttributes</a></li><li><a href="global.html#clearAttributes">clearAttributes</a></li><li><a href="global.html#computeWeights">computeWeights</a></li><li><a href="global.html#countMentsu">countMentsu</a></li><li><a href="global.html#countTiles">countTiles</a></li><li><a href="global.html#deleteAttribute">deleteAttribute</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#escapeHtml">escapeHtml</a></li><li><a href="global.html#gammaSample">gammaSample</a></li><li><a href="global.html#gaussian">gaussian</a></li><li><a href="global.html#generateAdvancedProblem">generateAdvancedProblem</a></li><li><a href="global.html#generateDora">generateDora</a></li><li><a href="global.html#generateProblem">generateProblem</a></li><li><a href="global.html#getAllAttributes">getAllAttributes</a></li><li><a href="global.html#getAttributes">getAttributes</a></li><li><a href="global.html#getInsanity">getInsanity</a></li><li><a href="global.html#getQuantumRandomNumbers">getQuantumRandomNumbers</a></li><li><a href="global.html#getSynonyms">getSynonyms</a></li><li><a href="global.html#handToUnicode">handToUnicode</a></li><li><a href="global.html#handleDraw">handleDraw</a></li><li><a href="global.html#handleGetst">handleGetst</a></li><li><a href="global.html#handleInsanity">handleInsanity</a></li><li><a href="global.html#handleLi">handleLi</a></li><li><a href="global.html#handleMessage">handleMessage</a></li><li><a href="global.html#handleName">handleName</a></li><li><a href="global.html#handleNnkr">handleNnkr</a></li><li><a href="global.html#handleRa">handleRa</a></li><li><a href="global.html#handleRoll">handleRoll</a></li><li><a href="global.html#handleSc">handleSc</a></li><li><a href="global.html#handleSt">handleSt</a></li><li><a href="global.html#handleSynonyms">handleSynonyms</a></li><li><a href="global.html#handleTi">handleTi</a></li><li><a href="global.html#improvementCount">improvementCount</a></li><li><a href="global.html#jrrp">jrrp</a></li><li><a href="global.html#nextTile">nextTile</a></li><li><a href="global.html#normalizeKey">normalizeKey</a></li><li><a href="global.html#parseDiceExpression">parseDiceExpression</a></li><li><a href="global.html#randomHand">randomHand</a></li><li><a href="global.html#randomTile">randomTile</a></li><li><a href="global.html#rollDice">rollDice</a></li><li><a href="global.html#setAttribute">setAttribute</a></li><li><a href="global.html#shantenNormal">shantenNormal</a></li><li><a href="global.html#shuffle">shuffle</a></li><li><a href="global.html#sortHand">sortHand</a></li><li><a href="global.html#splitAttributes">splitAttributes</a></li><li><a href="global.html#tileToUnicode">tileToUnicode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Nov 13 2025 21:20:12 GMT+0800 (China Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

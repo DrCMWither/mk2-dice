@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: commands/sc.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: commands/sc.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { getAttributes, setAttribute } from "../utils/storage.js";
+import { rollDice, parseDiceExpression } from "../utils/dice.js";
+import { normalizeKey,escapeHtml } from "../utils/utils.js";
+
+/**
+ * Handles a sanity check command (/sc) for a user.
+ *
+ * Performs a POW/Will check against a user’s Will attribute.
+ * If the check fails, reduces the Sanity attribute based on the given expressions.
+ *
+ * @param {Object} env - The environment/context object for storage operations.
+ * @param {string} message - The command message, e.g., "/sc 1/1d6".
+ *                           Format: &lt;expression1>/&lt;expression2>
+ *                           expression1 = value deducted on success
+ *                           expression2 = value deducted on failure
+ * @param {string} userId - The unique identifier of the user performing the check.
+ * @param {string} chatId - The unique identifier of the chat where the command is issued.
+ * @param {string} userName - The display name of the user, can be overridden by stored nickname.
+ * @returns {Promise&lt;string>} - A formatted string describing the roll, result, and sanity reduction.
+ *
+ * @example
+ * await handleSc(env, "/sc 1d6/2d6", "123", "456", "Alice");
+ */
+export async function handleSc(env, message, userId, chatId, userName) {
+    const parts = message.trim().split(/\s+/);
+    if (parts.length &lt; 2) {
+        return "用法: /sc &lt;表达式1|表达式2>";
+    }
+
+    const storedName = await getAttributes(env, userId, chatId, true);
+    if (storedName) userName = storedName;
+
+    const exprParts = parts[1].split("/");
+    if (exprParts.length !== 2) return "表达式格式错误，应为 &lt;表达式1>/&lt;表达式2>";
+
+    const expr1 = exprParts[0];
+    const expr2 = exprParts[1];
+
+    const attrs     = await getAttributes(env, userId, chatId);
+    const willKey   = await normalizeKey(env, "意志");
+    const sanityKey = await normalizeKey(env, "理智");
+
+    if (!(willKey in attrs) || !(sanityKey in attrs)) {
+        return `未找到所需属性「意志」或「理智」。`;
+    }
+
+    const willValue = attrs[willKey];
+
+    // POW Check
+    const roll = 1 + Math.floor(Math.random() * 100);
+    let result = "";
+    if (roll === 1) result = "大成功";
+    else if (roll >= 99) result = "大失败";
+    else if (roll &lt;= Math.floor(willValue / 5)) result = "极难成功";
+    else if (roll &lt;= Math.floor(willValue / 2)) result = "困难成功";
+    else if (roll &lt;= willValue) result = "成功";
+    else result = "失败";
+
+    const reduceExpr = ["大成功", "极难成功", "困难成功", "成功"].includes(result)
+        ? expr1
+        : expr2;
+
+    const parsed = parseDiceExpression(reduceExpr);
+    if (!parsed) return `无法解析表达式: ${reduceExpr}`;
+
+    const { count, sides, multiplier, modifier } = parsed;
+    const rolls = rollDice(count, sides);
+    const sum = rolls.reduce((a, b) => a + b, 0);
+    const reduceValue = sum * multiplier + modifier;
+
+    const newSanity = Math.max(0, attrs[sanityKey] - reduceValue);
+    await setAttribute(env, userId, chatId, sanityKey, newSanity);
+
+    return `🎲 ${escapeHtml(userName)} 进行「${willKey}」检定\n结果: ${roll}/${willValue} → ${result}\n${sanityKey}减少：${reduceValue}\n${attrs[sanityKey]} → ${newSanity}`;
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#bestDiscard">bestDiscard</a></li><li><a href="global.html#clearAllAttributes">clearAllAttributes</a></li><li><a href="global.html#clearAttributes">clearAttributes</a></li><li><a href="global.html#computeWeights">computeWeights</a></li><li><a href="global.html#countMentsu">countMentsu</a></li><li><a href="global.html#countTiles">countTiles</a></li><li><a href="global.html#deleteAttribute">deleteAttribute</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#escapeHtml">escapeHtml</a></li><li><a href="global.html#gammaSample">gammaSample</a></li><li><a href="global.html#gaussian">gaussian</a></li><li><a href="global.html#generateAdvancedProblem">generateAdvancedProblem</a></li><li><a href="global.html#generateDora">generateDora</a></li><li><a href="global.html#generateProblem">generateProblem</a></li><li><a href="global.html#getAllAttributes">getAllAttributes</a></li><li><a href="global.html#getAttributes">getAttributes</a></li><li><a href="global.html#getInsanity">getInsanity</a></li><li><a href="global.html#getQuantumRandomNumbers">getQuantumRandomNumbers</a></li><li><a href="global.html#getSynonyms">getSynonyms</a></li><li><a href="global.html#handToUnicode">handToUnicode</a></li><li><a href="global.html#handleDraw">handleDraw</a></li><li><a href="global.html#handleGetst">handleGetst</a></li><li><a href="global.html#handleInsanity">handleInsanity</a></li><li><a href="global.html#handleLi">handleLi</a></li><li><a href="global.html#handleMessage">handleMessage</a></li><li><a href="global.html#handleName">handleName</a></li><li><a href="global.html#handleNnkr">handleNnkr</a></li><li><a href="global.html#handleRa">handleRa</a></li><li><a href="global.html#handleRoll">handleRoll</a></li><li><a href="global.html#handleSc">handleSc</a></li><li><a href="global.html#handleSt">handleSt</a></li><li><a href="global.html#handleSynonyms">handleSynonyms</a></li><li><a href="global.html#handleTi">handleTi</a></li><li><a href="global.html#improvementCount">improvementCount</a></li><li><a href="global.html#jrrp">jrrp</a></li><li><a href="global.html#nextTile">nextTile</a></li><li><a href="global.html#normalizeKey">normalizeKey</a></li><li><a href="global.html#parseDiceExpression">parseDiceExpression</a></li><li><a href="global.html#randomHand">randomHand</a></li><li><a href="global.html#randomTile">randomTile</a></li><li><a href="global.html#rollDice">rollDice</a></li><li><a href="global.html#setAttribute">setAttribute</a></li><li><a href="global.html#shantenNormal">shantenNormal</a></li><li><a href="global.html#shuffle">shuffle</a></li><li><a href="global.html#sortHand">sortHand</a></li><li><a href="global.html#splitAttributes">splitAttributes</a></li><li><a href="global.html#tileToUnicode">tileToUnicode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Nov 13 2025 21:20:12 GMT+0800 (China Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

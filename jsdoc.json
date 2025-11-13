@@ -1,0 +1,22 @@
+{
+    "tags": {
+      "allowUnknownTags": true,
+      "dictionaries": ["jsdoc"]
+    },
+    "source": {
+      "include": [
+        "src",
+        "commands",
+        "utils/mahjong",
+        "utils"
+      ],
+      "includePattern": "\\.[jt]s$",
+      "excludePattern": "(^|\\/|\\\\)\\.(git|hg|svn)"
+    },
+    "opts": {
+      "encoding": "utf8",
+      "destination": "./docs",
+      "recurse": true,
+      "verbose": true
+    }
+}

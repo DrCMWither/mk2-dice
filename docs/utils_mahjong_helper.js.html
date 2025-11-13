@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: utils/mahjong/helper.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: utils/mahjong/helper.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { shantenNormal } from "./shantenCalculator.js";
+
+/**
+ * Sorts a Mahjong hand numerically.
+ * @param {number[]} hand - Array of tile IDs (0–33).
+ * @returns {number[]} - New array with tiles sorted ascending.
+ */
+export function sortHand(hand) {
+    return [...hand].sort((a, b) => a - b);
+}
+
+/**
+ * Counts the occurrences of each tile in a hand.
+ * @param {number[]} hand - Array of tile IDs (0–33).
+ * @returns {number[]} - Array of length 34 where each index represents the count of that tile.
+ */
+export function countTiles(hand) {
+    const counts = new Array(34).fill(0);
+    for (const t of hand) counts[t]++;
+    return counts;
+}
+
+/**
+ * Generates a random single tile ID (0–33).
+ * @returns {number} - Random tile ID.
+ */
+function randomTile() {
+    return Math.floor(Math.random() * 34);
+}
+
+/**
+ * Generates a random Mahjong hand of 14 tiles.
+ * @returns {number[]} - Array of 14 tile IDs.
+ */
+export function randomHand() {
+    const hand = [];
+    while (hand.length &lt; 14) {
+        hand.push(randomTile());
+    }
+    return hand;
+}
+
+/**
+ * Calculates which tiles would improve the hand if drawn.
+ * @param {number[]} handAfterDiscard - Array of 13 tiles after a discard.
+ * @returns {number[]} - Array of tile IDs that reduce shanten count when drawn.
+ */
+export function improvementCount(handAfterDiscard) {
+    const base = shantenNormal(handAfterDiscard);
+    const counts = countTiles(handAfterDiscard);
+    const improvements = [];
+
+    for (let t = 0; t &lt; 34; t++) {
+        if (counts[t] >= 4) continue;
+        const newHand = handAfterDiscard.concat(t);
+        const s = shantenNormal(newHand);
+        if (s &lt; base) {
+            improvements.push(t);
+        }
+    }
+    return improvements;
+}
+
+/**
+ * Converts a tile ID (0–33) to its Unicode Mahjong character.
+ * @param {number} id - Tile ID.
+ * @returns {string} - Unicode character representing the tile.
+ * @throws Will throw an error if the ID is out of range.
+ */
+export function tileToUnicode(id) {
+    if (id &lt; 0 || id > 33) throw new Error("tile id out of range (0–33)");
+
+    const code = 0x1F000 + id;
+    if (id === 4) return String.fromCodePoint(code) + "\uFE0E";
+
+    return String.fromCodePoint(code);
+}
+
+/**
+ * Converts a string in mspz notation to a tile ID.
+ * @param {string} str - Tile in mspz notation (e.g., "1m", "5p", "3s", "7z").
+ * @returns {number|null} - Tile ID (0–33) or null if invalid.
+ *
+ * Suit mapping:
+ *  - z (honors): 1–7 → 0–6 (East→0, White→6)
+ *  - m (man): 1–9 → 7–15
+ *  - s (sou): 1–9 → 16–24
+ *  - p (pin): 1–9 → 25–33
+ */
+export function handToUnicode(hand) {
+    return hand.map(tileToUnicode).join("");;
+}
+
+export function mspzToTile(str) {
+    const m = str.match(/^(\d)([mspz])$/);
+    if (!m) return null;
+
+    const num = parseInt(m[1]);
+    const suit = m[2];
+
+    if (suit === "z") {
+      if (num &lt; 1 || num > 7) return null;
+      return num - 1; // 东→0, 白→6
+    }
+    if (suit === "m") {
+      if (num &lt; 1 || num > 9) return null;
+      return 7 + (num - 1); // 万 1–9 → 7–15
+    }
+    if (suit === "s") {
+      if (num &lt; 1 || num > 9) return null;
+      return 16 + (num - 1); // 索 1–9 → 16–24
+    }
+    if (suit === "p") {
+      if (num &lt; 1 || num > 9) return null;
+      return 25 + (num - 1); // 饼 1–9 → 25–33
+    }
+
+    return null;
+}
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#bestDiscard">bestDiscard</a></li><li><a href="global.html#clearAllAttributes">clearAllAttributes</a></li><li><a href="global.html#clearAttributes">clearAttributes</a></li><li><a href="global.html#computeWeights">computeWeights</a></li><li><a href="global.html#countMentsu">countMentsu</a></li><li><a href="global.html#countTiles">countTiles</a></li><li><a href="global.html#deleteAttribute">deleteAttribute</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#escapeHtml">escapeHtml</a></li><li><a href="global.html#gammaSample">gammaSample</a></li><li><a href="global.html#gaussian">gaussian</a></li><li><a href="global.html#generateAdvancedProblem">generateAdvancedProblem</a></li><li><a href="global.html#generateDora">generateDora</a></li><li><a href="global.html#generateProblem">generateProblem</a></li><li><a href="global.html#getAllAttributes">getAllAttributes</a></li><li><a href="global.html#getAttributes">getAttributes</a></li><li><a href="global.html#getInsanity">getInsanity</a></li><li><a href="global.html#getQuantumRandomNumbers">getQuantumRandomNumbers</a></li><li><a href="global.html#getSynonyms">getSynonyms</a></li><li><a href="global.html#handToUnicode">handToUnicode</a></li><li><a href="global.html#handleDraw">handleDraw</a></li><li><a href="global.html#handleGetst">handleGetst</a></li><li><a href="global.html#handleInsanity">handleInsanity</a></li><li><a href="global.html#handleLi">handleLi</a></li><li><a href="global.html#handleMessage">handleMessage</a></li><li><a href="global.html#handleName">handleName</a></li><li><a href="global.html#handleNnkr">handleNnkr</a></li><li><a href="global.html#handleRa">handleRa</a></li><li><a href="global.html#handleRoll">handleRoll</a></li><li><a href="global.html#handleSc">handleSc</a></li><li><a href="global.html#handleSt">handleSt</a></li><li><a href="global.html#handleSynonyms">handleSynonyms</a></li><li><a href="global.html#handleTi">handleTi</a></li><li><a href="global.html#improvementCount">improvementCount</a></li><li><a href="global.html#jrrp">jrrp</a></li><li><a href="global.html#nextTile">nextTile</a></li><li><a href="global.html#normalizeKey">normalizeKey</a></li><li><a href="global.html#parseDiceExpression">parseDiceExpression</a></li><li><a href="global.html#randomHand">randomHand</a></li><li><a href="global.html#randomTile">randomTile</a></li><li><a href="global.html#rollDice">rollDice</a></li><li><a href="global.html#setAttribute">setAttribute</a></li><li><a href="global.html#shantenNormal">shantenNormal</a></li><li><a href="global.html#shuffle">shuffle</a></li><li><a href="global.html#sortHand">sortHand</a></li><li><a href="global.html#splitAttributes">splitAttributes</a></li><li><a href="global.html#tileToUnicode">tileToUnicode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Nov 13 2025 21:20:12 GMT+0800 (China Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

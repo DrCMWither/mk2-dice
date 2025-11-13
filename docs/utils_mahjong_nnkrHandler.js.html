@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: utils/mahjong/nnkrHandler.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: utils/mahjong/nnkrHandler.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { shantenNormal } from "./shantenCalculator.js";
+import { improvementCount } from "./helper.js";
+import { shuffle } from "../utils.js";
+
+/**
+ * Determines the best discard(s) for a hand based on shanten and improvement count.
+ * @param {number[]} hand - Array of 14 tile IDs representing a Mahjong hand.
+ * @returns {{ bestShanten: number, candidates: Array&lt;{discard: number, shanten: number, improvements: number[]}> }}
+ *  - bestShanten: minimal shanten value after discard
+ *  - candidates: list of candidate discards achieving bestShanten, each with improvements
+ */
+export function bestDiscard(hand) {
+    let bestShanten = Infinity;
+    let candidates = [];
+
+    for (let i = 0; i &lt; hand.length; i++) {
+        const newHand = hand.slice(0, i).concat(hand.slice(i + 1));
+        const s = shantenNormal(newHand);
+        const imps = improvementCount(newHand);
+
+        if (s &lt; bestShanten) {
+            bestShanten = s;
+            candidates = [{ discard: hand[i], shanten: s, improvements: imps }];
+        } else if (s === bestShanten) {
+            candidates.push({ discard: hand[i], shanten: s, improvements: imps });
+        }
+    }
+    return { bestShanten, candidates };
+}
+
+const HONOR_TILES = [0, 1, 2, 3, 4, 5, 6];
+const SUIT_TILES = {
+    man: Array.from({ length: 9 }, (_, i) => 7 + i),
+    pin: Array.from({ length: 9 }, (_, i) => 16 + i),
+    sou: Array.from({ length: 9 }, (_, i) => 25 + i),
+};
+
+/**
+ * Counts the number of complete melds (mentsu) in a tile count array.
+ * @param {number[]} counts - Array of 34 tile counts.
+ * @returns {number} - Number of melds.
+ */
+function countMentsu(counts) {
+    let mentsu = 0;
+    for (let i = 0; i &lt; 34; i++) {
+        if (counts[i] >= 3) {
+            mentsu++;
+            counts[i] -= 3;
+        }
+        if (i >= 7 &amp;&amp; i &lt; 25 &amp;&amp; i % 9 &lt; 7) {
+            const seqCount = Math.min(counts[i], counts[i + 1], counts[i + 2]);
+            if (seqCount > 0) {
+                counts[i] -= seqCount;
+                counts[i + 1] -= seqCount;
+                counts[i + 2] -= seqCount;
+                mentsu += seqCount;
+            }
+        }
+    }
+    return mentsu;
+}
+
+/**
+ * Draws random tiles from a given tile set.
+ *
+ * Never used.
+ * @param {number} count - Number of tiles to draw.
+ * @param {number[]} tiles - Array of possible tile IDs.
+ * @returns {number[]} - Randomly selected tiles.
+ */
+function drawTiles(count, tiles) {
+    return Array(count).fill(0).map(() => tiles[Math.floor(Math.random() * tiles.length)]);
+}
+
+/**
+ * Generates a random Mahjong hand for NNKR practice.
+ * Ensures hand meets minimum shanten and meld requirements.
+ * @param {number} [minShanten=1] - Minimum shanten allowed.
+ * @param {number} [maxShanten=4] - Maximum shanten allowed.
+ * @returns {{ hand: number[], shanten: number, mentsu: number, useHonors: boolean }}
+ *  - hand: Array of 14 tile IDs
+ *  - shanten: Shanten value
+ *  - mentsu: Number of complete melds
+ *  - useHonors: Whether honors are included in the hand
+ */
+export function generateProblem(minShanten = 1, maxShanten = 4) {
+    while (true) {
+        let hand = [];
+        const useHonors = Math.random() &lt; 0.3;
+
+        if (useHonors) {
+            const numSets = Math.floor(Math.random() * 3);
+            for (let i = 0; i &lt; numSets; i++) {
+                const t = HONOR_TILES[Math.floor(Math.random() * HONOR_TILES.length)];
+                const count = Math.random() &lt; 0.5 ? 2 : 3;
+                hand.push(...Array(count).fill(t));
+            }
+        }
+
+        for (const suit of Object.values(SUIT_TILES)) {
+            const dice = Math.random();
+            if (dice &lt; 0.4) {
+                const start = suit[Math.floor(Math.random() * 7)];
+                hand.push(start, start + 1, start + 2);
+            } else if (dice &lt; 0.75) {
+                const start = suit[Math.floor(Math.random() * 8)];
+                const second = Math.random() &lt; 0.5 ? start + 1 : start + 2;
+                hand.push(start, second);
+            } else {
+                hand.push(suit[Math.floor(Math.random() * 9)]);
+            }
+        }
+
+        while (hand.length &lt; 14) {
+            const suit = Object.values(SUIT_TILES)[Math.floor(Math.random() * 3)];
+            hand.push(suit[Math.floor(Math.random() * 9)]);
+        }
+
+        shuffle(hand);
+        hand = hand.slice(0, 14);
+
+        const counts = Array(34).fill(0);
+        for (const t of hand) counts[t]++;
+
+        const shanten = shantenNormal(counts);
+        const mentsu = countMentsu([...counts]);
+
+        if ((shanten &lt;= minShanten &amp;&amp; mentsu > 2) || (shanten > maxShanten &amp;&amp; mentsu &lt;= 1)) continue;
+
+        return { hand, shanten, mentsu, useHonors };
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#bestDiscard">bestDiscard</a></li><li><a href="global.html#clearAllAttributes">clearAllAttributes</a></li><li><a href="global.html#clearAttributes">clearAttributes</a></li><li><a href="global.html#computeWeights">computeWeights</a></li><li><a href="global.html#countMentsu">countMentsu</a></li><li><a href="global.html#countTiles">countTiles</a></li><li><a href="global.html#deleteAttribute">deleteAttribute</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#escapeHtml">escapeHtml</a></li><li><a href="global.html#gammaSample">gammaSample</a></li><li><a href="global.html#gaussian">gaussian</a></li><li><a href="global.html#generateAdvancedProblem">generateAdvancedProblem</a></li><li><a href="global.html#generateDora">generateDora</a></li><li><a href="global.html#generateProblem">generateProblem</a></li><li><a href="global.html#getAllAttributes">getAllAttributes</a></li><li><a href="global.html#getAttributes">getAttributes</a></li><li><a href="global.html#getInsanity">getInsanity</a></li><li><a href="global.html#getQuantumRandomNumbers">getQuantumRandomNumbers</a></li><li><a href="global.html#getSynonyms">getSynonyms</a></li><li><a href="global.html#handToUnicode">handToUnicode</a></li><li><a href="global.html#handleDraw">handleDraw</a></li><li><a href="global.html#handleGetst">handleGetst</a></li><li><a href="global.html#handleInsanity">handleInsanity</a></li><li><a href="global.html#handleLi">handleLi</a></li><li><a href="global.html#handleMessage">handleMessage</a></li><li><a href="global.html#handleName">handleName</a></li><li><a href="global.html#handleNnkr">handleNnkr</a></li><li><a href="global.html#handleRa">handleRa</a></li><li><a href="global.html#handleRoll">handleRoll</a></li><li><a href="global.html#handleSc">handleSc</a></li><li><a href="global.html#handleSt">handleSt</a></li><li><a href="global.html#handleSynonyms">handleSynonyms</a></li><li><a href="global.html#handleTi">handleTi</a></li><li><a href="global.html#improvementCount">improvementCount</a></li><li><a href="global.html#jrrp">jrrp</a></li><li><a href="global.html#nextTile">nextTile</a></li><li><a href="global.html#normalizeKey">normalizeKey</a></li><li><a href="global.html#parseDiceExpression">parseDiceExpression</a></li><li><a href="global.html#randomHand">randomHand</a></li><li><a href="global.html#randomTile">randomTile</a></li><li><a href="global.html#rollDice">rollDice</a></li><li><a href="global.html#setAttribute">setAttribute</a></li><li><a href="global.html#shantenNormal">shantenNormal</a></li><li><a href="global.html#shuffle">shuffle</a></li><li><a href="global.html#sortHand">sortHand</a></li><li><a href="global.html#splitAttributes">splitAttributes</a></li><li><a href="global.html#tileToUnicode">tileToUnicode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Nov 13 2025 21:20:12 GMT+0800 (China Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

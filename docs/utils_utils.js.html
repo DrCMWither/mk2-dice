@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: utils/utils.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: utils/utils.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Splits a string containing letters and numbers into separate parts.
+ *
+ * Example: "abc123" → "abc 123", "123abc" → "123 abc"
+ *
+ * @param {string} str - The input string to split.
+ * @returns {string} - The string with letters and numbers separated by a space.
+ */
+export function splitAttributes(str) {
+    return str
+        .replace(/([\p{Script=Han}A-Za-z]+)(\d+)/gu, "$1 $2")
+        .replace(/(\d+)([\p{Script=Han}A-Za-z]+)/gu, "$1 $2")
+        .trim();
+}
+
+/**
+ * Normalizes a key using a synonyms table stored in KV.
+ *
+ * @param {Object} env - The environment/context object containing KV storage.
+ * @param {string} key - The key to normalize.
+ * @returns {Promise&lt;string>} - The normalized key if a synonym exists, otherwise the original key.
+ */
+export async function normalizeKey(env, key) {
+    if (!key) return key;
+    const synonyms = (await env.KV.get("synonyms", "json")) || {};
+    return synonyms[key] || key;
+}
+
+/**
+ * Retrieves all synonyms for a given word from KV.
+ *
+ * @param {Object} env - The environment/context object containing KV storage.
+ * @param {string} word - The word to find synonyms for.
+ * @returns {Promise&lt;string[]>} - An array of synonyms including the original word.
+ */
+export async function getSynonyms(env, word) {
+    if (!word) return [];
+    const synonyms = (await env.KV.get("synonyms", "json")) || {};
+    // Find standard key
+    const leadName = synonyms[word] || word;
+    const result = [];
+    for (const [k, v] of Object.entries(synonyms)) {
+        if (v === leadName) result.push(k);
+    }
+
+    return result;
+}
+
+/**
+ * Retrieves an insanity symptom description from KV based on type and roll.
+ *
+ * @param {Object} env - The environment/context object containing KV storage.
+ * @param {string} type - The insanity table type (e.g., "Ti", "Li", "Phobia", "Manics").
+ * @param {number|string} roll - The roll number to look up in the table.
+ * @returns {Promise&lt;string>} - The symptom description, or "未知症状" if not found.
+ */
+export async function getInsanity(env, type, roll) {
+    if (!type || !roll) return "未知症状";
+    const insanityTables = (await env.KV.get("symptoms", "json")) || {};
+    const table = insanityTables[type] || {};
+    return table[roll] || "未知症状";
+}
+
+
+/**
+ * Escapes HTML special characters in a string to prevent injection issues.
+ *
+ * @param {string} str - The input string.
+ * @returns {string} - The escaped string safe for HTML display.
+ */
+export function escapeHtml(str) {
+    if (!str) return "";
+    return str
+        .replace(/&amp;/g, "&amp;amp;")
+        .replace(/&lt;/g, "&amp;lt;")
+        .replace(/>/g, "&amp;gt;")
+        .replace(/"/g, "&amp;quot;")
+        .replace(/'/g, "&amp;#39;")
+        .replace(/`/g, "&amp;#96;");
+}
+
+/**
+ * Shuffles an array in-place using the Fisher–Yates algorithm.
+ *
+ * @param {any[]} arr - The array to shuffle.
+ * @returns {any[]} - The shuffled array (same reference as input).
+ */
+export function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#bestDiscard">bestDiscard</a></li><li><a href="global.html#clearAllAttributes">clearAllAttributes</a></li><li><a href="global.html#clearAttributes">clearAttributes</a></li><li><a href="global.html#computeWeights">computeWeights</a></li><li><a href="global.html#countMentsu">countMentsu</a></li><li><a href="global.html#countTiles">countTiles</a></li><li><a href="global.html#deleteAttribute">deleteAttribute</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#escapeHtml">escapeHtml</a></li><li><a href="global.html#gammaSample">gammaSample</a></li><li><a href="global.html#gaussian">gaussian</a></li><li><a href="global.html#generateAdvancedProblem">generateAdvancedProblem</a></li><li><a href="global.html#generateDora">generateDora</a></li><li><a href="global.html#generateProblem">generateProblem</a></li><li><a href="global.html#getAllAttributes">getAllAttributes</a></li><li><a href="global.html#getAttributes">getAttributes</a></li><li><a href="global.html#getInsanity">getInsanity</a></li><li><a href="global.html#getQuantumRandomNumbers">getQuantumRandomNumbers</a></li><li><a href="global.html#getSynonyms">getSynonyms</a></li><li><a href="global.html#handToUnicode">handToUnicode</a></li><li><a href="global.html#handleDraw">handleDraw</a></li><li><a href="global.html#handleGetst">handleGetst</a></li><li><a href="global.html#handleInsanity">handleInsanity</a></li><li><a href="global.html#handleLi">handleLi</a></li><li><a href="global.html#handleMessage">handleMessage</a></li><li><a href="global.html#handleName">handleName</a></li><li><a href="global.html#handleNnkr">handleNnkr</a></li><li><a href="global.html#handleRa">handleRa</a></li><li><a href="global.html#handleRoll">handleRoll</a></li><li><a href="global.html#handleSc">handleSc</a></li><li><a href="global.html#handleSt">handleSt</a></li><li><a href="global.html#handleSynonyms">handleSynonyms</a></li><li><a href="global.html#handleTi">handleTi</a></li><li><a href="global.html#improvementCount">improvementCount</a></li><li><a href="global.html#jrrp">jrrp</a></li><li><a href="global.html#nextTile">nextTile</a></li><li><a href="global.html#normalizeKey">normalizeKey</a></li><li><a href="global.html#parseDiceExpression">parseDiceExpression</a></li><li><a href="global.html#randomHand">randomHand</a></li><li><a href="global.html#randomTile">randomTile</a></li><li><a href="global.html#rollDice">rollDice</a></li><li><a href="global.html#setAttribute">setAttribute</a></li><li><a href="global.html#shantenNormal">shantenNormal</a></li><li><a href="global.html#shuffle">shuffle</a></li><li><a href="global.html#sortHand">sortHand</a></li><li><a href="global.html#splitAttributes">splitAttributes</a></li><li><a href="global.html#tileToUnicode">tileToUnicode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Nov 13 2025 21:20:12 GMT+0800 (China Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

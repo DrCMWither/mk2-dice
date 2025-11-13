@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: commands/insanity.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: commands/insanity.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { getInsanity } from "../utils/utils.js";
+import { rollDice } from "../utils/dice.js";
+
+/**
+ * Generates a random insanity effect based on a given table.
+ *
+ * Rolls 2d10 to determine the main insanity type and its duration.
+ * For specific main types (9 = Phobia, 10 = Manics), an additional 1d100 roll is used
+ * to determine the subcategory of the insanity effect.
+ *
+ * @param {Object} env - The environment/context object for storage or table lookup.
+ * @param {string} tableKey - The key of the insanity table to use (e.g., "Ti", "Li").
+ * @param {string} label - The label text to prepend to the result for display.
+ * @returns {Promise&lt;string>} - A formatted string describing the insanity effect and its duration.
+ *
+ * @example
+ * await handleInsanity(env, "Ti", "抽中的临时疯狂症状为");
+ */
+export async function handleInsanity(env, tableKey, label) {
+    try {
+        let rolls = rollDice(2, 10); // [main, duration]
+        if (!Array.isArray(rolls) || rolls.length &lt; 2) {
+            console.warn("[WARN] rollDice 返回异常，使用默认值 [1,1]");
+            rolls = [1, 1];
+        }
+
+        let main = Number(rolls[0]);
+        let duration = Number(rolls[1]);
+
+        if (!Number.isInteger(main) || main &lt; 1 || main > 10) main = 1;
+        if (!Number.isInteger(duration) || duration &lt; 1 || duration > 10) duration = 1;
+
+        const typeText = await getInsanity(env, tableKey, main);
+
+        if (main === 9) {
+            const pRoll = rollDice(1, 100);
+            const p = Number(pRoll[0]) || 1;
+            const sub = await getInsanity(env, "Phobia", p);
+            return `${label}：\n${typeText}\n具体恐惧症状为：${sub}\n持续时间：1d10 = ${duration} 轮。`;
+        } else if (main === 10) {
+            const mRoll = rollDice(1, 100);
+            const m = Number(mRoll[0]) || 1;
+            const sub = await getInsanity(env, "Manics", m);
+            return `${label}：\n${typeText}\n具体躁狂症状为：${sub}\n持续时间：1d10 = ${duration} 轮。`;
+        } else {
+            return `${label}：\n${typeText}\n持续时间：1d10 = ${duration} 轮。`;
+        }
+    } catch (err) {
+        console.error("[ERROR] handleInsanity failed:", err);
+        return `${label}：获取疯狂症状时发生错误，请稍后再试。`;
+    }
+}
+
+
+/**
+ * Generates a temporary insanity effect ("Ti") with a predefined label.
+ *
+ * @param {Object} env - The environment/context object for storage or table lookup.
+ * @returns {Promise&lt;string>} - A formatted string describing the temporary insanity effect.
+ *
+ * @example
+ * await handleTi(env);
+ */
+export async function handleTi(env) {
+    return handleInsanity(env, "Ti", "抽中的临时疯狂症状为");
+}
+
+/**
+ * Generates a lasting insanity effect ("Li") with a predefined label.
+ *
+ * @param {Object} env - The environment/context object for storage or table lookup.
+ * @returns {Promise&lt;string>} - A formatted string describing the lasting insanity effect.
+ *
+ * @example
+ * await handleLi(env);
+ */
+export async function handleLi(env) {
+    return handleInsanity(env, "Li", "抽中的总结疯狂症状为");
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#bestDiscard">bestDiscard</a></li><li><a href="global.html#clearAllAttributes">clearAllAttributes</a></li><li><a href="global.html#clearAttributes">clearAttributes</a></li><li><a href="global.html#computeWeights">computeWeights</a></li><li><a href="global.html#countMentsu">countMentsu</a></li><li><a href="global.html#countTiles">countTiles</a></li><li><a href="global.html#deleteAttribute">deleteAttribute</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#escapeHtml">escapeHtml</a></li><li><a href="global.html#gammaSample">gammaSample</a></li><li><a href="global.html#gaussian">gaussian</a></li><li><a href="global.html#generateAdvancedProblem">generateAdvancedProblem</a></li><li><a href="global.html#generateDora">generateDora</a></li><li><a href="global.html#generateProblem">generateProblem</a></li><li><a href="global.html#getAllAttributes">getAllAttributes</a></li><li><a href="global.html#getAttributes">getAttributes</a></li><li><a href="global.html#getInsanity">getInsanity</a></li><li><a href="global.html#getQuantumRandomNumbers">getQuantumRandomNumbers</a></li><li><a href="global.html#getSynonyms">getSynonyms</a></li><li><a href="global.html#handToUnicode">handToUnicode</a></li><li><a href="global.html#handleDraw">handleDraw</a></li><li><a href="global.html#handleGetst">handleGetst</a></li><li><a href="global.html#handleInsanity">handleInsanity</a></li><li><a href="global.html#handleLi">handleLi</a></li><li><a href="global.html#handleMessage">handleMessage</a></li><li><a href="global.html#handleName">handleName</a></li><li><a href="global.html#handleNnkr">handleNnkr</a></li><li><a href="global.html#handleRa">handleRa</a></li><li><a href="global.html#handleRoll">handleRoll</a></li><li><a href="global.html#handleSc">handleSc</a></li><li><a href="global.html#handleSt">handleSt</a></li><li><a href="global.html#handleSynonyms">handleSynonyms</a></li><li><a href="global.html#handleTi">handleTi</a></li><li><a href="global.html#improvementCount">improvementCount</a></li><li><a href="global.html#jrrp">jrrp</a></li><li><a href="global.html#nextTile">nextTile</a></li><li><a href="global.html#normalizeKey">normalizeKey</a></li><li><a href="global.html#parseDiceExpression">parseDiceExpression</a></li><li><a href="global.html#randomHand">randomHand</a></li><li><a href="global.html#randomTile">randomTile</a></li><li><a href="global.html#rollDice">rollDice</a></li><li><a href="global.html#setAttribute">setAttribute</a></li><li><a href="global.html#shantenNormal">shantenNormal</a></li><li><a href="global.html#shuffle">shuffle</a></li><li><a href="global.html#sortHand">sortHand</a></li><li><a href="global.html#splitAttributes">splitAttributes</a></li><li><a href="global.html#tileToUnicode">tileToUnicode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Nov 13 2025 21:20:12 GMT+0800 (China Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
