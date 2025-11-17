@@ -1,11 +1,42 @@
 import { getAttributes } from "../utils/storage.js";
 import  { isAdmin } from "../utils/message.js";
 
+/**
+ * Manages group-specific custom card decks with subcommands for viewing, creating, and deleting decks.
+ *
+ * @async
+ * @param {Object} env - Environment object containing bindings (e.g., KV storage)
+ * @param {string} message - Full command message (e.g., "/deck show", "/deck new DeckName=Entry1|Entry2")
+ * @param {string} userId - User identifier for permission checks
+ * @param {string} chatId - Group identifier for group-specific data
+ * @param {string} userName - Current username (may be overridden by stored name)
+ * @returns {Promise<string>} Status message indicating operation result or error
+ *
+ * @example
+ * // User sends: "/deck show"
+ * // Returns: "本群的自定义卡组如下：\n\n塔罗（3 条目）\n占卜（5 条目)"
+ *
+ * @example
+ * // Admin sends: "/deck new 塔罗=魔术师|命运之轮|月亮"
+ * // Returns: "管理员 Alice 已为本群创建卡组 "塔罗"，共 3 条目。"
+ *
+ * @example
+ * // Admin sends: "/deck clearall"
+ * // Returns: "管理员 Alice 已清除本群的全部自定义卡组。"
+ *
+ * @example
+ * // Admin sends: "/deck clear 塔罗"
+ * // Returns: "管理员 Alice 已删除卡组 "塔罗"。"
+ */
 export async function handleDeck(env, message, userId, chatId, userName) {
     const parts = message.trim().split(/\s+/);
 
     const storedName = await getAttributes(env, userId, chatId, true);
     if (storedName) userName = storedName;
+
+    if (!parts[1]) {
+        return "用法: /deck show|new|clear|clearall [可选参数]";
+    }
 
     if (parts[1] === "show") {
         const existing = await env.KV.get(`group:${chatId}`);

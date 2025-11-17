@@ -91,4 +91,20 @@ export function shuffle(arr) {
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
     return arr;
-  }
+}
+
+export async function isAdmin(env, userId, chatId) {
+    try {
+        const admins = await env.bot.getChatAdministrators(chatId);
+
+        if (!Array.isArray(admins)) return false;
+
+        return admins.some(
+            admin => admin.user.id === Number(userId) &&
+                    (admin.status === "administrator" || admin.status === "creator")
+        );
+    } catch (e) {
+        console.error("[ERROR] isAdmin failed:", e);
+        return false;
+    }
+}

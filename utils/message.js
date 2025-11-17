@@ -41,6 +41,18 @@ export async function handleMessage(chatId, payload, options = {}) {
     });
 }
 
+/**
+ * Checks if a Telegram user is an administrator in a specific chat.
+ *
+ * @async
+ * @param {string} userId - Telegram user ID to check (e.g., "123456789")
+ * @param {string} chatId - Telegram chat ID (group/channel ID)
+ * @returns {Promise<boolean>} True if user is admin, false otherwise
+ *
+ * @example
+ * // Check if user 123456789 is admin in chat -100123456789
+ * const isAdmin = await isAdmin("123456789", "-100123456789");
+ **/
 export async function isAdmin(userId, chatId) {
     try {
         const resp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getChatAdministrators?chat_id=${chatId}`);

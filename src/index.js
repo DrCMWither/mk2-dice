@@ -84,9 +84,9 @@ export default {
             fsck:  async () => handleFastcheck(                                                 ),
         };
 
-        const helpMatch = message.match(/^\/help(?:@${env.BOT_NAME})?$/);
+        const helpMatch = message.match(/^\/(help|start)(?:@${env.BOT_NAME})?$/);
         if (helpMatch) {
-            console.log(`[LOG] Matched /help for chat ${chatId}. Sending help message.`);
+            console.log(`[LOG] Matched /help or /start for chat ${chatId}. Sending help message.`);
             await handleMessage(chatId, handleHelp(0));
         } else {
             const cmdMatch = message.slice(0, 1024).match(/^\/(\w+)(?:@${env.BOT_NAME})?(?:\s+(.+))?$/);
