@@ -44,6 +44,19 @@ import { jrrp            } from "./commands/jrrp.js";
  */
 export default {
     async fetch(request, env, ctx) {
+
+        const { SERVICE_NAME, BOT_TOKEN, BOT_ID, BOT_NAME, KV } = env;
+
+        const missingConfigs = [];
+        if (!BOT_TOKEN) missingConfigs.push("BOT_TOKEN");
+        if (!BOT_NAME)  missingConfigs.push("BOT_NAME");
+        if (!KV)        missingConfigs.push("KV (Namespace Binding)");
+
+        if (missingConfigs.length > 0) {
+            console.error(`[FATAL ERROR] Service <${SERVICE_NAME || 'Unknown'}> is missing required configurations: ${missingConfigs.join(", ")}`);
+            return new Response("Internal Server Error: Bot configuration is incomplete.", { status: 500 });
+        }
+
         const url = new URL(request.url);
         let update;
         try {
@@ -84,12 +97,12 @@ export default {
             fsck:  async () => handleFastcheck(                                                 ),
         };
 
-        const helpMatch = message.match(/^\/(help|start)(?:@${env.BOT_NAME})?$/);
+        const helpMatch = message.match(new RegExp(`^\\/(help|start)(?:@${BOT_NAME})?$`));
         if (helpMatch) {
             console.log(`[LOG] Matched /help or /start for chat ${chatId}. Sending help message.`);
             await handleMessage(chatId, handleHelp(0));
         } else {
-            const cmdMatch = message.slice(0, 1024).match(/^\/(\w+)(?:@${env.BOT_NAME})?(?:\s+(.+))?$/);
+            const cmdMatch = message.slice(0, 1024).match(new RegExp(`^\\/(\\w+)(?:@${BOT_NAME})?(?:\\s+(.+))?$`));
             if (cmdMatch) {
                 const cmd = cmdMatch[1];
                 if (commands[cmd]) {
