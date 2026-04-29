@@ -1,5 +1,5 @@
 name = "example-dice-bot"
-main = "./build/utils/kv_builder.js"
+main = "./src/index.js"
 compatibility_date = "2025-10-22"
 
 [vars]
