@@ -11,7 +11,6 @@ import { handleName      } from "../commands/nn.js";
 import { handleMessage   } from "../utils/message.js";
 import { errorI18n       } from "../utils/etrans.js";
 import { handleNnkr      } from "../commands/nnkr.js";
-import { handleFastcheck } from "../commands/fsck.js";
 import { jrrp            } from "../commands/jrrp.js";
 
 
@@ -94,7 +93,6 @@ export default {
             sc:    async () => handleSc       (env, message, userId, chatId,            userName),
             ti:    async () => handleTi       (env                                              ),
             nnkr:  async () => handleNnkr     (env, message, chatId                             ),
-            fsck:  async () => handleFastcheck(                                                 ),
         };
 
         const helpMatch = message.match(new RegExp(`^\\/(help|start)(?:@${BOT_NAME})?$`));
