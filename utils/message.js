@@ -20,7 +20,7 @@
  * // Edit an existing message
  * await handleMessage(123456789, { text: "Updated text" }, { edit: true, messageId: 42 });
  */
-export async function handleMessage(chatId, payload, options = {}) {
+export async function handleMessage(env, chatId, payload, options = {}) {
     const url = options.edit
         ? `https://api.telegram.org/bot${env.BOT_TOKEN}/editMessageText`
         : `https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`;
@@ -53,14 +53,17 @@ export async function handleMessage(chatId, payload, options = {}) {
  * // Check if user 123456789 is admin in chat -100123456789
  * const isAdmin = await isAdmin("123456789", "-100123456789");
  **/
-export async function isAdmin(userId, chatId) {
+export async function isAdmin(env, userId, chatId) {
     try {
-        const resp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getChatAdministrators?chat_id=${chatId}`);
+        const resp = await fetch(
+            `https://api.telegram.org/bot${env.BOT_TOKEN}/getChatAdministrators?chat_id=${chatId}`
+        );
         const data = await resp.json();
 
         if (!data.ok) return false;
+
         const admins = data.result.map(a => a.user.id);
-        return admins.includes(userId);
+        return admins.includes(Number(userId));
     } catch (e) {
         console.error("[ERROR] Telegram admin check failed:", e);
         return false;

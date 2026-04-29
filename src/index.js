@@ -98,7 +98,7 @@ export default {
         const helpMatch = message.match(new RegExp(`^\\/(help|start)(?:@${BOT_NAME})?$`));
         if (helpMatch) {
             console.log(`[LOG] Matched /help or /start for chat ${chatId}. Sending help message.`);
-            await handleMessage(chatId, handleHelp(0));
+            await handleMessage(env, chatId, handleHelp(0));
         } else {
             const cmdMatch = message.slice(0, 1024).match(new RegExp(`^\\/(\\w+)(?:@${BOT_NAME})?(?:\\s+(.+))?$`));
             if (cmdMatch) {
@@ -108,11 +108,11 @@ export default {
                         reply = await commands[cmd]();
                         const targetChatId = cmd === "rh" ? userId : chatId;
                         if (reply) {
-                            await handleMessage(targetChatId, { text: reply, parse_mode: "HTML" });
+                            await handleMessage(env, targetChatId, { text: reply, parse_mode: "HTML" });
                         }
                     } catch (err) {
                         console.error(`[ERROR] Command ${cmd} failed:`, err);
-                        await handleMessage(chatId, { text: `命令执行失败，请稍后再试。原因：${err}` });
+                        await handleMessage(enc, chatId, { text: `命令执行失败，请稍后再试。原因：${err}` });
                     }
                 }
             }
@@ -127,6 +127,7 @@ export default {
                 return new Response("OK");
             }
             await handleMessage(
+                env,
                 callback.message.chat.id,
                 handleHelp(page),
                 { edit: true, messageId: callback.message.message_id }
