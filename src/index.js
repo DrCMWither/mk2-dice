@@ -112,7 +112,7 @@ export default {
                         }
                     } catch (err) {
                         console.error(`[ERROR] Command ${cmd} failed:`, err);
-                        await handleMessage(enc, chatId, { text: `命令执行失败，请稍后再试。原因：${err}` });
+                        await handleMessage(env, chatId, { text: `命令执行失败，请稍后再试。原因：${err}` });
                     }
                 }
             }
