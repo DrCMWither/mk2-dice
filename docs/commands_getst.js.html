@@ -64,42 +64,90 @@ export async function handleGetst(env, message, userId, chatId, chatTitle, userN
     const parts = (message || "").trim().split(/\s+/);
 
     try {
-        // Try to get storaged surname
-        const storedName = await getAttributes(env, userId, chatId, true);
-        if (storedName &amp;&amp; typeof storedName === "string") {
-            userName = storedName;
+        function formatAttrValue(value) {
+            if (value === null || value === undefined) return "";
+            if (typeof value === "object") return JSON.stringify(value);
+            return String(value);
+        }
+
+        function hasOwn(obj, key) {
+            return Object.prototype.hasOwnProperty.call(obj, key);
         }
 
         // /getst all
+        // /getst all someAttr
         if (parts.length > 1 &amp;&amp; parts[1] === "all") {
+            const queryKey = parts.slice(2).join(" ").trim();
             const allAttrs = await getAllAttributes(env, userId);
+
             if (!allAttrs || Object.keys(allAttrs).length === 0) {
                 return "您在所有群都没有设置任何属性。";
             }
 
-            let text = `${escapeHtml(userName)} 在所有群的属性：\n`;
-            for (let [title, attrs] of Object.entries(allAttrs)) {
-                text += `\n群 ${escapeHtml(title || "未知")}:\n`;
+            if (queryKey) {
+                const lines = [
+                    `${escapeHtml(userName)} 在所有群中的属性 ${escapeHtml(queryKey)}：`
+                ];
+
+                let found = false;
+
+                for (const [groupId, attrs] of Object.entries(allAttrs)) {
+                    if (!attrs || typeof attrs !== "object") continue;
+                    if (!hasOwn(attrs, queryKey)) continue;
+
+                    found = true;
+                    lines.push(
+                        `群 ${escapeHtml(groupId)}: ${escapeHtml(formatAttrValue(attrs[queryKey]))}`
+                    );
+                }
+
+                if (!found) {
+                    return `${escapeHtml(userName)} 在所有群都没有属性 ${escapeHtml(queryKey)}。`;
+                }
+
+                return lines.join("\n");
+            }
+
+            const lines = [`${escapeHtml(userName)} 在所有群的属性：`];
+
+            for (const [groupId, attrs] of Object.entries(allAttrs)) {
+                lines.push(`\n群 ${escapeHtml(groupId)}:`);
+
                 if (attrs &amp;&amp; typeof attrs === "object") {
-                    for (let [k, v] of Object.entries(attrs)) {
-                        text += `- ${k}: ${v}\n`;
+                    for (const [k, v] of Object.entries(attrs)) {
+                        lines.push(`- ${escapeHtml(k)}: ${escapeHtml(formatAttrValue(v))}`);
                     }
                 }
             }
-            return escapeHtml(text.trim());
+
+            return lines.join("\n").trim();
         }
+
+        // /getst hp
+        const queryKey = parts.slice(1).join(" ").trim();
 
         // Default: current group
         const attrs = await getAttributes(env, userId, chatId);
+
         if (!attrs || Object.keys(attrs).length === 0) {
-            return `您在群 ${chatTitle || chatId} 没有设置任何属性。`;
+            return `您在群 ${escapeHtml(chatTitle || chatId)} 没有设置任何属性。`;
         }
 
-        let text = `${escapeHtml(userName)} 在当前群的属性：\n`;
-        for (let [k, v] of Object.entries(attrs)) {
-            text += `- ${k}: ${v}\n`;
+        if (queryKey) {
+            if (!hasOwn(attrs, queryKey)) {
+                return `${escapeHtml(userName)} 在当前群没有属性 ${escapeHtml(queryKey)}。`;
+            }
+
+            return `${escapeHtml(userName)} 的 ${escapeHtml(queryKey)}：${escapeHtml(formatAttrValue(attrs[queryKey]))}`;
         }
-        return escapeHtml(text.trim());
+
+        const lines = [`${escapeHtml(userName)} 在当前群的属性：`];
+
+        for (const [k, v] of Object.entries(attrs)) {
+            lines.push(`- ${escapeHtml(k)}: ${escapeHtml(formatAttrValue(v))}`);
+        }
+
+        return lines.join("\n").trim();
     } catch (err) {
         console.error("[ERROR] handleGetst failed:", err);
         return "获取属性时发生错误，请稍后再试。";
@@ -115,13 +163,13 @@ export async function handleGetst(env, message, userId, chatId, chatTitle, userN
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#bestDiscard">bestDiscard</a></li><li><a href="global.html#clearAllAttributes">clearAllAttributes</a></li><li><a href="global.html#clearAttributes">clearAttributes</a></li><li><a href="global.html#computeWeights">computeWeights</a></li><li><a href="global.html#countMentsu">countMentsu</a></li><li><a href="global.html#countTiles">countTiles</a></li><li><a href="global.html#deleteAttribute">deleteAttribute</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#escapeHtml">escapeHtml</a></li><li><a href="global.html#gammaSample">gammaSample</a></li><li><a href="global.html#gaussian">gaussian</a></li><li><a href="global.html#generateAdvancedProblem">generateAdvancedProblem</a></li><li><a href="global.html#generateDora">generateDora</a></li><li><a href="global.html#generateProblem">generateProblem</a></li><li><a href="global.html#getAllAttributes">getAllAttributes</a></li><li><a href="global.html#getAttributes">getAttributes</a></li><li><a href="global.html#getInsanity">getInsanity</a></li><li><a href="global.html#getQuantumRandomNumbers">getQuantumRandomNumbers</a></li><li><a href="global.html#getSynonyms">getSynonyms</a></li><li><a href="global.html#handToUnicode">handToUnicode</a></li><li><a href="global.html#handleDraw">handleDraw</a></li><li><a href="global.html#handleGetst">handleGetst</a></li><li><a href="global.html#handleInsanity">handleInsanity</a></li><li><a href="global.html#handleLi">handleLi</a></li><li><a href="global.html#handleMessage">handleMessage</a></li><li><a href="global.html#handleName">handleName</a></li><li><a href="global.html#handleNnkr">handleNnkr</a></li><li><a href="global.html#handleRa">handleRa</a></li><li><a href="global.html#handleRoll">handleRoll</a></li><li><a href="global.html#handleSc">handleSc</a></li><li><a href="global.html#handleSt">handleSt</a></li><li><a href="global.html#handleSynonyms">handleSynonyms</a></li><li><a href="global.html#handleTi">handleTi</a></li><li><a href="global.html#improvementCount">improvementCount</a></li><li><a href="global.html#jrrp">jrrp</a></li><li><a href="global.html#nextTile">nextTile</a></li><li><a href="global.html#normalizeKey">normalizeKey</a></li><li><a href="global.html#parseDiceExpression">parseDiceExpression</a></li><li><a href="global.html#randomHand">randomHand</a></li><li><a href="global.html#randomTile">randomTile</a></li><li><a href="global.html#rollDice">rollDice</a></li><li><a href="global.html#setAttribute">setAttribute</a></li><li><a href="global.html#shantenNormal">shantenNormal</a></li><li><a href="global.html#shuffle">shuffle</a></li><li><a href="global.html#sortHand">sortHand</a></li><li><a href="global.html#splitAttributes">splitAttributes</a></li><li><a href="global.html#tileToUnicode">tileToUnicode</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CommandRegistry.html">CommandRegistry</a></li></ul><h3>Global</h3><ul><li><a href="global.html#bestDiscard">bestDiscard</a></li><li><a href="global.html#clearAllAttributes">clearAllAttributes</a></li><li><a href="global.html#clearAttributes">clearAttributes</a></li><li><a href="global.html#computeWeights">computeWeights</a></li><li><a href="global.html#countMentsu">countMentsu</a></li><li><a href="global.html#countTiles">countTiles</a></li><li><a href="global.html#createTelegramContext">createTelegramContext</a></li><li><a href="global.html#deleteAttribute">deleteAttribute</a></li><li><a href="global.html#drawTiles">drawTiles</a></li><li><a href="global.html#escapeHtml">escapeHtml</a></li><li><a href="global.html#gammaSample">gammaSample</a></li><li><a href="global.html#gaussian">gaussian</a></li><li><a href="global.html#generateAdvancedProblem">generateAdvancedProblem</a></li><li><a href="global.html#generateDora">generateDora</a></li><li><a href="global.html#generateProblem">generateProblem</a></li><li><a href="global.html#getAllAttributes">getAllAttributes</a></li><li><a href="global.html#getAttributes">getAttributes</a></li><li><a href="global.html#getInsanity">getInsanity</a></li><li><a href="global.html#getQuantumRandomNumbers">getQuantumRandomNumbers</a></li><li><a href="global.html#getSynonyms">getSynonyms</a></li><li><a href="global.html#handToUnicode">handToUnicode</a></li><li><a href="global.html#handleDeck">handleDeck</a></li><li><a href="global.html#handleDraw">handleDraw</a></li><li><a href="global.html#handleGetst">handleGetst</a></li><li><a href="global.html#handleInsanity">handleInsanity</a></li><li><a href="global.html#handleLi">handleLi</a></li><li><a href="global.html#handleMessage">handleMessage</a></li><li><a href="global.html#handleName">handleName</a></li><li><a href="global.html#handleNnkr">handleNnkr</a></li><li><a href="global.html#handleRa">handleRa</a></li><li><a href="global.html#handleRoll">handleRoll</a></li><li><a href="global.html#handleSc">handleSc</a></li><li><a href="global.html#handleSt">handleSt</a></li><li><a href="global.html#handleSynonyms">handleSynonyms</a></li><li><a href="global.html#handleTi">handleTi</a></li><li><a href="global.html#improvementCount">improvementCount</a></li><li><a href="global.html#isAdmin">isAdmin</a></li><li><a href="global.html#jrrp">jrrp</a></li><li><a href="global.html#nextTile">nextTile</a></li><li><a href="global.html#normalizeKey">normalizeKey</a></li><li><a href="global.html#parseDiceExpression">parseDiceExpression</a></li><li><a href="global.html#randomHand">randomHand</a></li><li><a href="global.html#randomTile">randomTile</a></li><li><a href="global.html#registry">registry</a></li><li><a href="global.html#rollDice">rollDice</a></li><li><a href="global.html#setAttribute">setAttribute</a></li><li><a href="global.html#shantenNormal">shantenNormal</a></li><li><a href="global.html#shuffle">shuffle</a></li><li><a href="global.html#sortHand">sortHand</a></li><li><a href="global.html#splitAttributes">splitAttributes</a></li><li><a href="global.html#tileToUnicode">tileToUnicode</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Nov 13 2025 21:20:12 GMT+0800 (China Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Apr 30 2026 13:10:53 GMT+0800 (China Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

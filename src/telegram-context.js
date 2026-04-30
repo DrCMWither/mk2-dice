@@ -1,3 +1,14 @@
+/**
+ * Transforms a raw Telegram Update into a unified context object.
+ * * This helper normalizes data from different update types (standard messages, 
+ * edited messages, and callback queries) so that command handlers can access 
+ * user and chat information using a consistent interface.
+ *
+ * @param {Object} update - The raw JSON body received from the Telegram Webhook.
+ * @param {Object} env - Environment bindings provided by the Cloudflare Worker.
+ * @param {Object} executionCtx - Context object for the current Worker invocation.
+ * @returns {TelegramContext} A flattened context object for easy consumption by handlers.
+ */
 export function createTelegramContext(update, env, executionCtx) {
     const messageObject = update.message || update.edited_message || null;
     const callback = update.callback_query || null;

@@ -14,6 +14,14 @@ import { jrrp               } from "../commands/jrrp.js";
 import { handleDeck         } from "../commands/deck.js";
 import { handleDraw         } from "../commands/draw.js";
 
+/**
+ * Command registrations link the CommandRegistry to individual handler functions.
+ * Each registration defines:
+ * - The primary command trigger (e.g., "roll").
+ * - Optional aliases (e.g., "r").
+ * - A handler function that receives the unified Telegram context.
+ * - Optional routing logic (e.g., `targetChatId` for private rolls).
+ */
 registry
     .register("help", {
         aliases: ["start"],
