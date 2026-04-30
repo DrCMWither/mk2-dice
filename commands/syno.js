@@ -1,4 +1,4 @@
-import { getSynonyms } from "../utils/utils.js";
+import { getSynonyms, splitArgs } from "../utils/utils.js";
 
 /**
  * Handles the /syno command to retrieve synonyms for a given word.
@@ -16,7 +16,7 @@ import { getSynonyms } from "../utils/utils.js";
  * // returns: "未找到词「test」的同义词。"
  */
 export async function handleSynonyms(env, message) {
-    const parts = message.trim().split(/\s+/);
+    const parts = splitArgs(message);
     if (parts.length < 2) return "用法: /syno <词>";
 
     const word = parts[1];

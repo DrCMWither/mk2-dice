@@ -6,7 +6,8 @@
                          } from "../utils/storage.js"; */
 import {  splitAttributes,
           normalizeKey,
-          escapeHtml
+          escapeHtml,
+          splitArgs
                          } from "../utils/utils.js";
 
 
@@ -39,7 +40,7 @@ import {  splitAttributes,
  */
 export async function handleSt(env, message, userId, chatId, chatTitle) {
     message = splitAttributes(message);
-    const parts = message.trim().split(/\s+/);
+    const parts = splitArgs(message);
 
     const groupKey = `group:${chatId}`;
     const groupData = (await env.KV.get(groupKey, "json")) || {};

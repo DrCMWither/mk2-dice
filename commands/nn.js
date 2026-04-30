@@ -4,7 +4,7 @@ import {
     clearAllAttributes,
 } from "../utils/storage.js";
 
-import { normalizeKey, escapeHtml } from "../utils/utils.js";
+import { normalizeKey, escapeHtml, splitArgs } from "../utils/utils.js";
 
 /**
  * Handles user nickname commands in a chat.
@@ -38,7 +38,7 @@ import { normalizeKey, escapeHtml } from "../utils/utils.js";
  * await handleName(env, "/nn clearall", "123", "456", "Test Chat", "Bob");
  */
 export async function handleName(env, message, userId, chatId, chatTitle, userName) {
-    const parts = message.trim().split(/\s+/);
+    const parts = splitArgs(message);
 
     if (parts.length < 2) {
         return "用法: /nn <昵称> 或 /nn clear /nn clearall";

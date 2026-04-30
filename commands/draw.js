@@ -1,6 +1,6 @@
 import { rollDice } from "../utils/dice.js";
 import { getAttributes } from "../utils/storage.js";
-import { normalizeKey } from "../utils/utils.js";
+import { normalizeKey, splitArgs } from "../utils/utils.js";
 
 /**
  * Handles the card draw command (e.g., `/draw [deck]`). Retrieves a random card from the specified deck.
@@ -22,7 +22,7 @@ import { normalizeKey } from "../utils/utils.js";
  *
  **/
 export async function handleDraw(env, message, userId, chatId, userName) {
-    const parts = message.trim().split(/\s+/);
+    const parts = splitArgs(message);
     let deckKind = await normalizeKey(env, parts[1]) || "塔罗";
     if (!deckKind) {
         return "请指定要抽取的卡组，例如：`/draw 塔罗`。";

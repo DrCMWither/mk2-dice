@@ -1,7 +1,7 @@
-import { getAttributes } from "../utils/storage.js";
-import { normalizeKey  } from "../utils/utils.js";
-import { rollDice      } from "../utils/dice.js";
-import { escapeHtml } from "../utils/utils.js";
+import { getAttributes         } from "../utils/storage.js";
+import { normalizeKey          } from "../utils/utils.js";
+import { rollDice              } from "../utils/dice.js";
+import { escapeHtml, splitArgs } from "../utils/utils.js";
 
 /**
  * Handles a random attribute check command.
@@ -34,7 +34,7 @@ import { escapeHtml } from "../utils/utils.js";
  * await handleRa(env, "/ra Luck 50", "123", "456", "Alice");
  */
 export async function handleRa(env, message, userId, chatId, userName) {
-    const parts = message.trim().split(/\s+/);
+    const parts = splitArgs(message);
     if (parts.length < 2) {
         return "用法: /ra <属性> [临时值]";
     }

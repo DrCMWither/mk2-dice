@@ -1,5 +1,6 @@
 import { getAttributes } from "../utils/storage.js";
 import  { isAdmin } from "../utils/message.js";
+import { splitArgs } from "../utils/utils.js";
 
 /**
  * Manages group-specific custom card decks with subcommands for viewing, creating, and deleting decks.
@@ -29,7 +30,7 @@ import  { isAdmin } from "../utils/message.js";
  * // Returns: "管理员 Alice 已删除卡组 "塔罗"。"
  */
 export async function handleDeck(env, message, userId, chatId, userName) {
-    const parts = message.trim().split(/\s+/);
+    const parts = splitArgs(message);
 
     const storedName = await getAttributes(env, userId, chatId, true);
     if (storedName) userName = storedName;

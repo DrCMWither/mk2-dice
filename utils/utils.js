@@ -108,3 +108,8 @@ export async function isAdmin(env, userId, chatId) {
         return false;
     }
 }
+
+export function splitArgs(message) {
+    const parts = message.trim().split(/\s+/);
+    return parts;
+}

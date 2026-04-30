@@ -2,6 +2,7 @@ import { generateProblem, bestDiscard } from "../utils/mahjong/nnkrHandler.js";
 import { handToUnicode, mspzToTile, tileToUnicode, sortHand } from "../utils/mahjong/helper.js";
 import { setAttribute, getAttributes, deleteAttribute } from "../utils/storage.js";
 import { generateAdvancedProblem } from "../utils/mahjong/nnkrAdvance.js";
+import { splitArgs } from "../utils/utils.js";
 const WIND_NAMES = ["东", "南", "西", "北"];
 
 /**
@@ -32,7 +33,7 @@ const WIND_NAMES = ["东", "南", "西", "北"];
  * await handleNnkr(env, "/nnkr 3s", "123");
  */
 export async function handleNnkr(env, message, chatId) {
-    const parts = message.trim().split(/\s+/);
+    const parts = splitArgs(message);
     const arg = parts[1];
 
     if (!arg || arg === "adv") {

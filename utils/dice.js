@@ -40,10 +40,10 @@ export function parseDiceExpression(expr) {
     const parts = expr.match(pattern);
     if (!parts) return null;
 
-    const count      = parts[1] ? parseInt(parts[1], 10) : 1;
-    const sides      = parseInt(parts[2], 10);
+    const count = parts[1] ? parseInt(parts[1], 10) : 1;
+    const sides = parseInt(parts[2], 10);
     const multiplier = parts[3] ? parseInt(parts[3], 10) : 1;
-    const modifier   = parts[4] ? parseInt(parts[4], 10) : 0;
+    const modifier = parts[4] ? parseInt(parts[4], 10) : 0;
 
     if (sides < 1 || count < 1) return null;
 
@@ -67,4 +67,49 @@ export async function getQuantumRandomNumbers(totalCount, sides) {
     const response = await fetch(`https://qrng.anu.edu.au/API/jsonI.php?length=${totalCount}&type=uint8&size=${sides}`);
     const data = await response.json();
     return data.data.slice(0, totalCount).map(num => (num % sides) + 1);
+}
+
+export function someDiceExpression(token) {
+    if (!token) return false;
+    if (!/d/i.test(token)) return false;
+    return Boolean(parseDiceExpression(token));
+}
+
+export function formatDiceExpression(parsed) {
+    let notation = `${parsed.count}d${parsed.sides}`;
+
+    if (parsed.multiplier !== 1) {
+        notation += `*${parsed.multiplier}`;
+    }
+
+    if (parsed.modifier !== 0) {
+        notation += parsed.modifier > 0 ? `+${parsed.modifier}` : `${parsed.modifier}`;
+    }
+
+    return notation;
+}
+
+export function rollParsedDice(parsed) {
+    const rolls = rollDice(parsed.count, parsed.sides);
+    const rawSum = rolls.reduce((acc, x) => acc + x, 0);
+    const total = rawSum * parsed.multiplier + parsed.modifier;
+
+    let expanded = rolls.join(" + ");
+
+    if (parsed.multiplier !== 1) {
+        expanded = `(${expanded})*${parsed.multiplier}`;
+    }
+
+    if (parsed.modifier !== 0) {
+        expanded += parsed.modifier > 0
+            ? ` + ${parsed.modifier}`
+            : ` - ${Math.abs(parsed.modifier)}`;
+    }
+
+    return {
+        rolls,
+        rawSum,
+        total,
+        expanded,
+    };
 }

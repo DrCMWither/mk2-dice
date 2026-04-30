@@ -1,6 +1,6 @@
 import { getAttributes, setAttribute } from "../utils/storage.js";
 import { rollDice, parseDiceExpression } from "../utils/dice.js";
-import { normalizeKey,escapeHtml } from "../utils/utils.js";
+import { normalizeKey, escapeHtml,splitArgs } from "../utils/utils.js";
 
 /**
  * Handles a sanity check command (/sc) for a user.
@@ -22,7 +22,7 @@ import { normalizeKey,escapeHtml } from "../utils/utils.js";
  * await handleSc(env, "/sc 1d6/2d6", "123", "456", "Alice");
  */
 export async function handleSc(env, message, userId, chatId, userName) {
-    const parts = message.trim().split(/\s+/);
+    const parts = splitArgs(message);
     if (parts.length < 2) {
         return "用法: /sc <表达式1|表达式2>";
     }
