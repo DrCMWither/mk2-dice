@@ -2,6 +2,9 @@ import { rollDice, parseDiceExpression, getQuantumRandomNumbers } from "../utils
 import { getAttributes } from "../utils/storage.js";
 import { escapeHtml } from "../utils/utils.js";
 
+const MAX_TOTAL_ROLLS = 255;
+const MAX_SIDES = 65535;
+
 /**
  * Handles a dice roll command with advanced notation.
  *
@@ -33,7 +36,7 @@ import { escapeHtml } from "../utils/utils.js";
  * @example
  * await handleRoll(env, "/r 2d10*2+5", "123", "456", "Alice");
  */
-export async function handleRoll(env, message, userId, chatId, isQuantum = false, userName) {
+export async function handleRoll(env, message, userId, chatId, userName, isQuantum = false) {
     const match = message.match(/^\/(roll|r|rh|rq)(?:\s+(.*))?$/i);
     if (!match) return "格式错误，请使用 /r [C#]NdM[*X][+Y]";
 

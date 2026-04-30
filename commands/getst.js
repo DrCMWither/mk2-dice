@@ -36,42 +36,90 @@ export async function handleGetst(env, message, userId, chatId, chatTitle, userN
     const parts = (message || "").trim().split(/\s+/);
 
     try {
-        // Try to get storaged surname
-        const storedName = await getAttributes(env, userId, chatId, true);
-        if (storedName && typeof storedName === "string") {
-            userName = storedName;
+        function formatAttrValue(value) {
+            if (value === null || value === undefined) return "";
+            if (typeof value === "object") return JSON.stringify(value);
+            return String(value);
+        }
+
+        function hasOwn(obj, key) {
+            return Object.prototype.hasOwnProperty.call(obj, key);
         }
 
         // /getst all
+        // /getst all someAttr
         if (parts.length > 1 && parts[1] === "all") {
+            const queryKey = parts.slice(2).join(" ").trim();
             const allAttrs = await getAllAttributes(env, userId);
+
             if (!allAttrs || Object.keys(allAttrs).length === 0) {
                 return "您在所有群都没有设置任何属性。";
             }
 
-            let text = `${escapeHtml(userName)} 在所有群的属性：\n`;
-            for (let [title, attrs] of Object.entries(allAttrs)) {
-                text += `\n群 ${escapeHtml(title || "未知")}:\n`;
+            if (queryKey) {
+                const lines = [
+                    `${escapeHtml(userName)} 在所有群中的属性 ${escapeHtml(queryKey)}：`
+                ];
+
+                let found = false;
+
+                for (const [groupId, attrs] of Object.entries(allAttrs)) {
+                    if (!attrs || typeof attrs !== "object") continue;
+                    if (!hasOwn(attrs, queryKey)) continue;
+
+                    found = true;
+                    lines.push(
+                        `群 ${escapeHtml(groupId)}: ${escapeHtml(formatAttrValue(attrs[queryKey]))}`
+                    );
+                }
+
+                if (!found) {
+                    return `${escapeHtml(userName)} 在所有群都没有属性 ${escapeHtml(queryKey)}。`;
+                }
+
+                return lines.join("\n");
+            }
+
+            const lines = [`${escapeHtml(userName)} 在所有群的属性：`];
+
+            for (const [groupId, attrs] of Object.entries(allAttrs)) {
+                lines.push(`\n群 ${escapeHtml(groupId)}:`);
+
                 if (attrs && typeof attrs === "object") {
-                    for (let [k, v] of Object.entries(attrs)) {
-                        text += `- ${k}: ${v}\n`;
+                    for (const [k, v] of Object.entries(attrs)) {
+                        lines.push(`- ${escapeHtml(k)}: ${escapeHtml(formatAttrValue(v))}`);
                     }
                 }
             }
-            return escapeHtml(text.trim());
+
+            return lines.join("\n").trim();
         }
+
+        // /getst hp
+        const queryKey = parts.slice(1).join(" ").trim();
 
         // Default: current group
         const attrs = await getAttributes(env, userId, chatId);
+
         if (!attrs || Object.keys(attrs).length === 0) {
-            return `您在群 ${chatTitle || chatId} 没有设置任何属性。`;
+            return `您在群 ${escapeHtml(chatTitle || chatId)} 没有设置任何属性。`;
         }
 
-        let text = `${escapeHtml(userName)} 在当前群的属性：\n`;
-        for (let [k, v] of Object.entries(attrs)) {
-            text += `- ${k}: ${v}\n`;
+        if (queryKey) {
+            if (!hasOwn(attrs, queryKey)) {
+                return `${escapeHtml(userName)} 在当前群没有属性 ${escapeHtml(queryKey)}。`;
+            }
+
+            return `${escapeHtml(userName)} 的 ${escapeHtml(queryKey)}：${escapeHtml(formatAttrValue(attrs[queryKey]))}`;
         }
-        return escapeHtml(text.trim());
+
+        const lines = [`${escapeHtml(userName)} 在当前群的属性：`];
+
+        for (const [k, v] of Object.entries(attrs)) {
+            lines.push(`- ${escapeHtml(k)}: ${escapeHtml(formatAttrValue(v))}`);
+        }
+
+        return lines.join("\n").trim();
     } catch (err) {
         console.error("[ERROR] handleGetst failed:", err);
         return "获取属性时发生错误，请稍后再试。";

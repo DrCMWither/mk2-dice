@@ -1,63 +1,114 @@
-import { handleHelp      } from "../commands/help.js";
-import { handleRoll      } from "../commands/roll.js";
-import { handleSt        } from "../commands/st.js";
-import { handleRa        } from "../commands/ra.js";
-import { handleGetst     } from "../commands/getst.js";
-import { handleSynonyms  } from "../commands/syno.js";
-import { handleSc        } from "../commands/sc.js";
-import { handleLi,
-         handleTi        } from "../commands/insanity.js";
-import { handleName      } from "../commands/nn.js";
-import { handleMessage   } from "../utils/message.js";
-import { errorI18n       } from "../utils/etrans.js";
-import { handleNnkr      } from "../commands/nnkr.js";
-import { jrrp            } from "../commands/jrrp.js";
+import { registry              } from "./command-registry.js";
+import                                "./cmd.js";
 
+import { createTelegramContext } from "./telegram-context.js";
+import { handleMessage         } from "./utils/message.js";
 
-/**
- * Cloudflare Worker entry point for handling Telegram bot updates.
- *
- * This default export object provides a `fetch` handler that:
- * 1. Parses incoming Telegram webhook requests.
- * 2. Extracts the message text, chat ID, user ID, username, and chat title.
- * 3. Matches the message against known bot commands (e.g., /roll, /st, /nn, /li, /ti, /ra, /getst, /syno, /sc, /nnkr, /fsck).
- * 4. Executes the corresponding command handler and sends the reply via `handleMessage`.
- * 5. Handles `/help` commands and paginated help callback queries.
- * 6. Handles errors gracefully and logs relevant messages.
- *
- * @default
- * @property {Function} fetch - The main request handler for the Worker.
- *
- * @param {Request} request - The incoming HTTP request (Telegram webhook POST).
- * @param {Object} env - Environment object containing KV namespaces and other bindings.
- * @param {Object} ctx - Context object provided by Cloudflare Worker runtime.
- *
- * @returns {Promise<Response>} - Always returns a Response with body "OK" or an error status.
- *
- * @example
- * // Deploy as a Cloudflare Worker with the route /telegram-webhook
- * export default { fetch };
- *
- * // Telegram sends a POST request with update JSON
- * // The Worker parses and dispatches to the appropriate command handler
- */
+function validateEnv(env) {
+    const missing = [];
+
+    if (!env.BOT_TOKEN) missing.push("BOT_TOKEN"             );
+    if (!env.BOT_NAME ) missing.push("BOT_NAME"              );
+    if (!env.KV       ) missing.push("KV (Namespace Binding)");
+
+    return missing;
+}
+
+function normalizeDispatchResult(result) {
+    if (!result) return null;
+
+    if (typeof result === "string") {
+        return {
+            payload: {
+                text: result,
+                parse_mode: "HTML",
+            },
+        };
+    }
+
+    if ("text" in result || "reply_markup" in result || "parse_mode" in result) {
+        return {
+            payload: result,
+        };
+    }
+
+    return result;
+}
+
+async function sendDispatchResult(ctx, result, fallbackTargetChatId) {
+    const normalized = normalizeDispatchResult(result);
+    if (!normalized) return;
+
+    const targetChatId =
+        normalized.targetChatId ??
+        fallbackTargetChatId ??
+        ctx.chatId;
+
+    const payload = normalized.payload;
+    const options = normalized.options || {};
+
+    if (!targetChatId || !payload) return;
+
+    await handleMessage(targetChatId, payload, options);
+}
+
+async function dispatchMessage(ctx) {
+    const parsed = registry.parseCommand(ctx.message, ctx.env.BOT_NAME);
+    if (!parsed) return;
+
+    const { name, command } = parsed;
+
+    try {
+        const result = await command.handler(ctx, parsed);
+
+        const targetChatId =
+            typeof command.targetChatId === "function"
+                ? command.targetChatId(ctx, parsed)
+                : command.targetChatId;
+
+        await sendDispatchResult(ctx, result, targetChatId);
+    } catch (err) {
+        console.error(`[ERROR] Command ${name} failed:`, err);
+
+        await handleMessage(ctx.env, ctx.chatId, {
+            text: `命令执行失败，请稍后再试。原因：${err}`,
+        });
+    }
+}
+
+async function dispatchCallback(ctx) {
+    const data = ctx.callback?.data;
+    if (!data) return;
+
+    const matched = registry.matchCallback(data);
+    if (!matched) return;
+
+    const { callback, match } = matched;
+
+    try {
+        const result = await callback.handler(ctx, match);
+        await sendDispatchResult(ctx, result, ctx.callback.message.chat.id);
+    } catch (err) {
+        console.error(`[ERROR] Callback ${callback.name} failed:`, err);
+    }
+}
+
 export default {
-    async fetch(request, env, ctx) {
-
-        const { SERVICE_NAME, BOT_TOKEN, BOT_ID, BOT_NAME, KV } = env;
-
-        const missingConfigs = [];
-        if (!BOT_TOKEN) missingConfigs.push("BOT_TOKEN");
-        if (!BOT_NAME)  missingConfigs.push("BOT_NAME");
-        if (!KV)        missingConfigs.push("KV (Namespace Binding)");
+    async fetch(request, env, executionCtx) {
+        const missingConfigs = validateEnv(env);
 
         if (missingConfigs.length > 0) {
-            console.error(`[FATAL ERROR] Service <${SERVICE_NAME || 'Unknown'}> is missing required configurations: ${missingConfigs.join(", ")}`);
-            return new Response("Internal Server Error: Bot configuration is incomplete.", { status: 500 });
+            console.error(
+                `[FATAL ERROR] Service <${env.SERVICE_NAME || "Unknown"}> is missing required configurations: ${missingConfigs.join(", ")}`,
+            );
+
+            return new Response("Internal Server Error: Bot configuration is incomplete.", {
+                status: 500,
+            });
         }
 
-        const url = new URL(request.url);
         let update;
+
         try {
             update = await request.json();
         } catch (err) {
@@ -65,73 +116,15 @@ export default {
             return new Response("Invalid JSON", { status: 400 });
         }
 
-        const message  = update.message?.text || "";
-        const chatId   = update.message?.chat.id;
-        const userId   = update.message?.from.id;
+        const ctx = createTelegramContext(update, env, executionCtx);
 
-        const from      = update.message?.from || {};
-        let   userName  = (from?.last_name || from?.username || from?.first_name || "匿名").toString().trim();
-        const chatTitle = update.message?.chat?.title || `群${chatId}`;
-        if (userName.length > 32) userName = userName.slice(0, 32) + "...";
-
-        let reply = null;
-
-        const commands = {
-            deck:  async () => handleDeck     (env, message, userId, chatId,            userName),
-            draw:  async () => handleDraw     (env, message, userId, chatId,            userName),
-            jrrp:  async () => jrrp           (env,          userId, chatId,            userName),
-            li:    async () => handleLi       (env                                              ),
-            nn:    async () => handleName     (env, message, userId, chatId, chatTitle, userName),
-            roll:  async () => handleRoll     (env, message, userId, chatId, false,     userName),
-            r:     async () => handleRoll     (env, message, userId, chatId, false,     userName),
-            rq:    async () => handleRoll     (env, message, userId, chatId, true,      userName),
-            ra:    async () => handleRa       (env, message, userId, chatId,            userName),
-            rh:    async () => handleRoll     (env, message, userId, null,   false,     userName),
-            st:    async () => handleSt       (env, message, userId, chatId, chatTitle          ),
-            getst: async () => handleGetst    (env, message, userId, chatId, chatTitle, userName),
-            syno:  async () => handleSynonyms (env, message                                     ),
-            sc:    async () => handleSc       (env, message, userId, chatId,            userName),
-            ti:    async () => handleTi       (env                                              ),
-            nnkr:  async () => handleNnkr     (env, message, chatId                             ),
-        };
-
-        const helpMatch = message.match(new RegExp(`^\\/(help|start)(?:@${BOT_NAME})?$`));
-        if (helpMatch) {
-            console.log(`[LOG] Matched /help or /start for chat ${chatId}. Sending help message.`);
-            await handleMessage(env, chatId, handleHelp(0));
-        } else {
-            const cmdMatch = message.slice(0, 1024).match(new RegExp(`^\\/(\\w+)(?:@${BOT_NAME})?(?:\\s+(.+))?$`));
-            if (cmdMatch) {
-                const cmd = cmdMatch[1];
-                if (commands[cmd]) {
-                    try {
-                        reply = await commands[cmd]();
-                        const targetChatId = cmd === "rh" ? userId : chatId;
-                        if (reply) {
-                            await handleMessage(env, targetChatId, { text: reply, parse_mode: "HTML" });
-                        }
-                    } catch (err) {
-                        console.error(`[ERROR] Command ${cmd} failed:`, err);
-                        await handleMessage(env, chatId, { text: `命令执行失败，请稍后再试。原因：${err}` });
-                    }
-                }
-            }
+        if (ctx.callback) {
+            await dispatchCallback(ctx);
+            return new Response("OK");
         }
 
-        const callback = update.callback_query;
-        if (callback?.data?.startsWith("help_")) {
-            const pageStr = callback.data.split("_")[1];
-            const page = Number(pageStr);
-            if (!Number.isInteger(page) || page < 0) {
-                console.warn("[WARN] Invalid help page:", pageStr);
-                return new Response("OK");
-            }
-            await handleMessage(
-                env,
-                callback.message.chat.id,
-                handleHelp(page),
-                { edit: true, messageId: callback.message.message_id }
-            );
+        if (ctx.message) {
+            await dispatchMessage(ctx);
         }
 
         return new Response("OK");
