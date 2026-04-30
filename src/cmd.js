@@ -42,7 +42,7 @@ registry
 
     .register("ri", {
         handler: (ctx) =>
-          handleInitiative(ctx.env, ctx.message, ctx.userId, ctx.chatId, ctx.userName),
+          handleRi(ctx.env, ctx.message, ctx.userId, ctx.chatId, ctx.userName),
       })
 
     .register("rh", {
