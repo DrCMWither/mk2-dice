@@ -43,6 +43,14 @@ export async function handleRoll(env, message, userId, chatId, isQuantum = false
 
     const { count, sides, multiplier, modifier, repeat = 1 } = parsed;
 
+
+    if (count * repeat > MAX_TOTAL_ROLLS) {
+        return `骰子数量过多！`;
+    }
+    if (sides > MAX_SIDES) {
+        return `骰子面数过多！`;
+    }
+
     if (sides < 1 && count === 0) {
         return `🎲 ${escapeHtml(userName)} 的结果: ${modifier}`;
     }

@@ -30,7 +30,7 @@ function getPageText(page = 0) {
     const end   = start + PAGE_SIZE;
     const pageCommands = commands.slice(start, end)
         .map(c => `<pre>${escapeHtml(c)}</pre>`).join("\n");
-    return `<b>欢迎使用试作型神器森罗万象虫洞吞噬者 MK.II 自动随机数系统</b>\n\n${pageCommands}`;
+    return `<b>欢迎使用试作型神器森罗万象虫洞吞噬者 MK.II 自动随机数系统</b>\n当前版本：alpha 1.1.1a\n${pageCommands}`;
 }
 
 function getKeyboard(page = 0) {
