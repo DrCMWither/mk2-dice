@@ -165,7 +165,7 @@ export async function handleRi(env, message, userId, chatId, userName) {
   results.forEach((item, index) => {
     const tied = totalCounts.get(item.total) > 1 ? "（同值）" : "";
 
-    output += `${index + 1}. ${escapeHtml(item.name)}：${escapeHtml(item.expanded)} = <b>${item.total}</b>${tied}\n`;
+    output += `${index + 1}. ${escapeHtml(item.name)}：${escapeHtml(item.expanded)} = ${item.total}${tied}\n`;
   });
 
   return output.trim();
