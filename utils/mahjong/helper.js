@@ -99,20 +99,20 @@ export function mspzToTile(str) {
     const suit = m[2];
 
     if (suit === "z") {
-      if (num < 1 || num > 7) return null;
-      return num - 1; // 东→0, 白→6
+        if (num < 1 || num > 7) return null;
+        return num - 1; // 东→0, 白→6
     }
     if (suit === "m") {
-      if (num < 1 || num > 9) return null;
-      return 7 + (num - 1); // 万 1–9 → 7–15
+        if (num < 1 || num > 9) return null;
+        return 7 + (num - 1); // 万 1–9 → 7–15
     }
     if (suit === "s") {
-      if (num < 1 || num > 9) return null;
-      return 16 + (num - 1); // 索 1–9 → 16–24
+        if (num < 1 || num > 9) return null;
+        return 16 + (num - 1); // 索 1–9 → 16–24
     }
     if (suit === "p") {
-      if (num < 1 || num > 9) return null;
-      return 25 + (num - 1); // 饼 1–9 → 25–33
+        if (num < 1 || num > 9) return null;
+        return 25 + (num - 1); // 饼 1–9 → 25–33
     }
 
     return null;

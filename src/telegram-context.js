@@ -1,7 +1,7 @@
 /**
  * Transforms a raw Telegram Update into a unified context object.
- * * This helper normalizes data from different update types (standard messages, 
- * edited messages, and callback queries) so that command handlers can access 
+ * * This helper normalizes data from different update types (standard messages,
+ * edited messages, and callback queries) so that command handlers can access
  * user and chat information using a consistent interface.
  *
  * @param {Object} update - The raw JSON body received from the Telegram Webhook.

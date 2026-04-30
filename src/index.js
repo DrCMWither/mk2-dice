@@ -2,7 +2,7 @@ import { registry              } from "./command-registry.js";
 import                                "./cmd.js";
 
 import { createTelegramContext } from "./telegram-context.js";
-import { handleMessage         } from "./utils/message.js";
+import { handleMessage         } from "../utils/message.js";
 
 function validateEnv(env) {
     const missing = [];

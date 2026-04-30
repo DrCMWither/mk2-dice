@@ -4,6 +4,7 @@ import { handleHelp         } from "../commands/help.js";
 import { handleRoll         } from "../commands/roll.js";
 import { handleSt           } from "../commands/st.js";
 import { handleRa           } from "../commands/ra.js";
+import { handleRi           } from "../commands/ri.js";
 import { handleGetst        } from "../commands/getst.js";
 import { handleSynonyms     } from "../commands/syno.js";
 import { handleSc           } from "../commands/sc.js";
@@ -38,6 +39,11 @@ registry
         handler: (ctx) =>
             handleRoll(ctx.env, ctx.message, ctx.userId, ctx.chatId, ctx.userName, true),
     })
+
+    .register("ri", {
+        handler: (ctx) =>
+          handleInitiative(ctx.env, ctx.message, ctx.userId, ctx.chatId, ctx.userName),
+      })
 
     .register("rh", {
         targetChatId: (ctx) => ctx.userId,

@@ -5,6 +5,7 @@ const commands = [
     "/ra <属性> [临时值] - 属性检定",
     "/rh [C#]NdM[*X][+Y] - 投掷暗骰",
     "/rq - 投掷量子骰",
+    "/ri [骰式] <名字>[±修正] ... - 骰先攻并排序，默认 1d20",
     "/jrrp - 查看今日人品",
     "/nn <昵称> - 设置当前群昵称",
     "/nn clear - 清除当前群昵称",
@@ -30,7 +31,7 @@ function getPageText(page = 0) {
     const end   = start + PAGE_SIZE;
     const pageCommands = commands.slice(start, end)
         .map(c => `<pre>${escapeHtml(c)}</pre>`).join("\n");
-    return `<b>欢迎使用试作型神器森罗万象虫洞吞噬者 MK.II 自动随机数系统</b>\n当前版本：alpha 1.2.0a\n${pageCommands}`;
+    return `<b>欢迎使用试作型神器森罗万象虫洞吞噬者 MK.II 自动随机数系统</b>\n当前版本：alpha 1.2.1b\n${pageCommands}`;
 }
 
 function getKeyboard(page = 0) {

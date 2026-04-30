@@ -56,44 +56,64 @@ function gaussian(x, mu, sigma) {
 
 /**
  * Computes discard weights for advanced problem selection.
- * @param {Array<{discard: number, improvements: number[]}>} candidates - Candidate discards.
- * @param {number[]} doraTiles - Array of Dora tile IDs.
- * @param {number} roundWind - Round wind ID (0–3).
- * @param {number} seatWind - Seat wind ID (0–3).
- * @param {number} [turn=1] - Current turn number.
- * @returns {number[]} - Array of weights corresponding to candidates.
+ *
+ * Higher weight means this discard is more likely to be considered plausible
+ * under the current advanced context.
+ *
+ * @param {Array<{discard: number, improvements: number[]}>} candidates
+ * @param {number[]} doraTiles
+ * @param {number} roundWind
+ * @param {number} seatWind
+ * @param {number} [turn=1]
+ * @returns {number[]}
  */
 export function computeWeights(candidates, doraTiles, roundWind, seatWind, turn = 1) {
     const weights = [];
+
     const sigmaBase = 1.2;
     const sigma = sigmaBase + 0.3 * (turn - 1);
 
     for (const cand of candidates) {
-        let weight = cand.improvements.length;
-
         const t = cand.discard;
 
-             if (t <= 8)  weight *= gaussian(t + 1,  5, sigma);
-        else if (t <= 17) weight *= gaussian(t - 8,  5, sigma);
-        else if (t <= 26) weight *= gaussian(t - 17, 5, sigma);
+        let weight = Math.max(1, cand.improvements.length);
 
-        if (doraTiles.includes(t)) weight *= 0.4;
+        const suit = tileSuit(t);
+        const num = tileNumber(t);
 
-        if (t >= 27 && t <= 33) {
-            if (t === roundWind || t === seatWind) weight *= 0.6;
-            else weight *= 0.8;
+        if (suit !== "z" && num !== null) {
+            const middleAffinity = gaussian(num, 5, sigma);
+
+            weight *= 1.2 - 0.7 * middleAffinity;
+        }
+
+        if (doraTiles.includes(t)) {
+            weight *= 0.35;
+        }
+
+        if (isHonor(t)) {
+            if (t === roundWind || t === seatWind) {
+                weight *= 0.55;
+            } else if (isDragon(t)) {
+                weight *= 0.75;
+            } else {
+                weight *= 1.05;
+            }
         }
 
         weights.push(weight);
     }
-
     for (const dora of doraTiles) {
         for (let i = 0; i < candidates.length; i++) {
             const t = candidates[i].discard;
-            if (dora <= 26 && t >= Math.floor(dora / 9) * 9 && t <= Math.floor(dora / 9) * 9 + 8) {
-                if (Math.abs(t - dora) === 1 || Math.abs(t - dora) === 2) {
-                    weights[i] *= 1.3;
-                }
+
+            if (!isSameNumberSuit(t, dora)) continue;
+
+            const dt = tileNumber(dora);
+            const nt = tileNumber(t);
+
+            if (Math.abs(nt - dt) === 1 || Math.abs(nt - dt) === 2) {
+                weights[i] *= 0.75;
             }
         }
     }
